@@ -1,0 +1,90 @@
+﻿.flex {
+    display: flex;
+}
+
+.sb {
+    justify-content: space-between;
+}
+
+.pd-20{
+    padding: 20px;
+}
+
+.pd-10 {
+    padding: 10px;
+}
+
+.pb-5px {
+    padding-bottom: 5px;
+}
+
+.pd-5px {
+    padding: 5px;
+}
+
+.bb-lightblue {
+    border-bottom: 1px solid lightblue;
+}
+
+.bd2-lightblue {
+    border: 2px solid lightblue;
+}
+
+.cr-lightblue {
+    color: lightblue;
+}
+
+.bn {
+    border: none;
+}
+
+#header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    background-color: white;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.mr-5 {
+    margin-right: 5px;
+}
+
+.mr-10 {
+    margin-right: 10px;
+}
+
+.aic {
+    align-items: center;
+}
+
+#inputSearchIcon{
+    position: relative;
+    left: -30px;
+}
+
+.w-70p {
+    width: 70%;
+}
+
+.w-30p {
+    width: 30%;
+}
+
+.modalSmall {
+    background: white;
+    position: fixed;
+    top: 100px;
+    right: 25px;
+    padding: 25px;
+}

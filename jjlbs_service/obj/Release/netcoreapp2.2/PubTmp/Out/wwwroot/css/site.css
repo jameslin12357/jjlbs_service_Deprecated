@@ -1,0 +1,19 @@
+﻿.flex {
+    display: flex;
+}
+
+.sb {
+    justify-content: space-between;
+}
+
+.pd-20{
+    padding: 20px;
+}
+
+.bb-lightblue {
+    border-bottom: 1px solid lightblue;
+}
+
+.bn {
+    border: none;
+}

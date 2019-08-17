@@ -222,13 +222,16 @@
 
                     }
                 }).datagrid('clientPaging').datagrid('highlightRow', 0);
-
                 $('#dg2').datagrid({ toolbar: "#tb2" }).datagrid({ data: getData(d2) }).datagrid('clientPaging');
             });
 
         }
 
         function getPoiDetail(e) {
+            for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
+                document.getElementsByClassName("modalSmall")[i].remove();
+            }
+           
             var dataGuid = e.getAttribute("data-guid");
             $.ajax({
                 type: "get",
@@ -236,13 +239,20 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (data) {
-                    htmlPoiDetail = `<div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div>`;
-                    document.getElementsByClassName('modalSmall')[0].innerHTML += htmlPoiDetail;
+                    var container = document.createElement('div');
+                    container.setAttribute("class", "modalSmall");
+                    container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><div class="mb-10"><span class="mr-5 bold">小区名称:</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div  class="mb-10"><span class="mr-5 bold">详细地址:</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div  class="mb-10"><span class="mr-5 bold">区域:</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div  class="mb-10"><span class="mr-5 bold">类型:</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div>`;
+                    //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
+                    document.getElementsByTagName("body")[0].appendChild(container);
                 },
                 error: function (item, err) {
                     console.log(err);
                 }
             });
+        }
+
+        function closeModal(e) {
+            e.parentElement.parentElement.remove();
         }
 
         /* 地图/数据 */
@@ -271,60 +281,16 @@
 
                 });
                 l.forEach(function (L) {
-
                     rowsL.push({ building_name: L["BUILDING_NAME"], building_address: L["BUILDING_ADDRESS"], building_action: "<i class=\"fa fa-eye mr-5 \"></i><i class=\"fa fa-edit mr-5 \"></i><i class=\"fa fa-trash-o \"></i>" });
-
                 });
                 createTables(rowsXQ, rowsL);
-                //createTableL(rowsL);
-                // l.forEach(function (l2) {
-                //    rowsL.push({ village_name: l2["BUILDING_NAME"], village_address: XQ["VILLAGE_ADDRESS"], village_region: XQ["VILLAGE_REGION"], village_type: XQ["VILLAGE_TYPE"] });
-
-                //}
-
-
-
-
-                //console.log(rowsXQ);
-                //$('#dg').datagrid({
-                //    data: rowsXQ
-                //});
-
-                /* 建筑物 */
-                //var buildingLayer = new AMap.Buildings({ zIndex: 130, merge: false, sort: false, zooms: [3, 20] });
-                //var areas = [];
-                //var obj = data;
-                //obj[0]["ds"].forEach(function (XQ) {
-
-                //    if (XQ["VILLAGE_BOUNDS"] !== "null") {
-                //        areas.push({ //围栏1
-                //            //visible:false,//是否可见
-                //            rejectTexture: true,//是否屏蔽自定义地图的纹理
-                //            color1: 'ffffff00',//楼顶颜色
-                //            color2: 'ffffcc00',//楼面颜色
-                //            path: XQ["VILLAGE_BOUNDS"]
-                //        });
-                //    }
-                //});
-                //var options =
-                //{
-                //    hideWithoutStyle: false,//是否隐藏设定区域外的楼块
-                //    areas: areas
-                //};
-                //buildingLayer.setStyle(options); //此配色优先级高于自定义mapStyle
-                //map.setLayers([new AMap.TileLayer({}),], buildingLayer);
-
             },
             error: function (item, err) {
                 console.log(err);
             }
         });
-
-        /* 数据 */
-
-
     </script>
 
-    <div class="modalSmall"></div>
+    
 </body>
 </html>

@@ -64,6 +64,14 @@
     margin-right: 10px;
 }
 
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}
+
 .aic {
     align-items: center;
 }
@@ -87,4 +95,8 @@
     top: 100px;
     right: 25px;
     padding: 25px;
+}
+
+.bold {
+    font-weight: bold;
 }

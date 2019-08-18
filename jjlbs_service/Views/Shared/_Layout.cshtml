@@ -72,6 +72,14 @@
     <script src="~/layui-v2.5.4/layui/layui.js" charset="utf-8"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script language="javascript">
+        var form;
+        layui.use(['form', 'layedit', 'laydate'], function () {
+            form = layui.form
+                , layer = layui.layer
+                , layedit = layui.layedit
+                , laydate = layui.laydate;
+
+        });
         var map = new AMap.Map("container", {
             zoom: 17,
             pitch: 50,
@@ -282,6 +290,69 @@
                 document.getElementsByClassName("modalSmall")[i].remove();
             }
             var dataGuid = e.getAttribute("data-guid");
+            $.ajax({
+                type: "get",
+                url: `./API/DetailsVillage?id=${dataGuid}`,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    var container = document.createElement('div');
+                    container.setAttribute("class", "modalSmall");
+                    container.innerHTML += `<form class="layui-form" action="">
+ <div class="layui-form-item">
+    <label class="layui-form-label">短输入框</label>
+    <div class="layui-input-inline">
+      <input type="text" name="username" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+ <div class="layui-form-item">
+    <label class="layui-form-label">短输入框</label>
+    <div class="layui-input-inline">
+      <input type="text" name="username" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">单行选择框</label>
+    <div class="layui-input-block">
+      <select name="interest" lay-filter="aihao">
+        <option value=""></option>
+        <option value="0">写作</option>
+        <option value="1" selected="">阅读</option>
+        <option value="2">游戏</option>
+        <option value="3">音乐</option>
+        <option value="4">旅行</option>
+      </select>
+    </div>
+  </div>
+ <div class="layui-form-item">
+    <label class="layui-form-label">单行选择框</label>
+    <div class="layui-input-block">
+      <select name="interest" lay-filter="aihao">
+        <option value=""></option>
+        <option value="0">写作</option>
+        <option value="1" selected="">阅读</option>
+        <option value="2">游戏</option>
+        <option value="3">音乐</option>
+        <option value="4">旅行</option>
+      </select>
+    </div>
+  </div>
+   <div class="layui-form-item">
+    <label class="layui-form-label">开关-默认关</label>
+    <div class="layui-input-block">
+      <input type="checkbox" name="close" lay-skin="switch" lay-text="ON|OFF">
+    </div>
+  </div>
+ 
+</form>`;
+                    //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
+                    document.getElementsByTagName("body")[0].appendChild(container);
+                    form.render();
+                },
+                error: function (item, err) {
+                    console.log(err);
+                }
+            });
 
         }
 
@@ -322,22 +393,22 @@
 
         function closeModal(e) {
             e.parentElement.parentElement.remove();
-            $.ajax({
-                type: "get",
-                url: `./API/DetailsVillage?id=${dataGuid}`,
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (data) {
-                    var container = document.createElement('div');
-                    container.setAttribute("class", "modalSmall");
-                    container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><div class="mb-10"><span class="mr-5 bold">小区名称:</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div  class="mb-10"><span class="mr-5 bold">详细地址:</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div  class="mb-10"><span class="mr-5 bold">区域:</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div  class="mb-10"><span class="mr-5 bold">类型:</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div>`;
-                    //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
-                    document.getElementsByTagName("body")[0].appendChild(container);
-                },
-                error: function (item, err) {
-                    console.log(err);
-                }
-            });
+            //$.ajax({
+            //    type: "get",
+            //    url: `./API/DetailsVillage?id=${dataGuid}`,
+            //    contentType: "application/json; charset=utf-8",
+            //    dataType: "json",
+            //    success: function (data) {
+            //        var container = document.createElement('div');
+            //        container.setAttribute("class", "modalSmall");
+            //        container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><div class="mb-10"><span class="mr-5 bold">小区名称:</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div  class="mb-10"><span class="mr-5 bold">详细地址:</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div  class="mb-10"><span class="mr-5 bold">区域:</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div  class="mb-10"><span class="mr-5 bold">类型:</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div>`;
+            //        //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
+            //        document.getElementsByTagName("body")[0].appendChild(container);
+            //    },
+            //    error: function (item, err) {
+            //        console.log(err);
+            //    }
+            //});
         }
 
         /* 地图/数据 */

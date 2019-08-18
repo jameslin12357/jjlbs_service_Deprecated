@@ -64,6 +64,11 @@
     margin-right: 10px;
 }
 
+.mr-20 {
+    margin-right: 20px;
+}
+
+
 .mb-10 {
     margin-bottom: 10px;
 }
@@ -99,4 +104,14 @@
 
 .bold {
     font-weight: bold;
+}
+
+#buttonOpenClose {
+    border-radius: 10px;
+    border: 2px solid lightblue;
+    background: white;
+    position: fixed;
+    top: 400px;
+    right: 25px;
+    padding: 10px;
 }

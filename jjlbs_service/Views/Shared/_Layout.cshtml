@@ -210,16 +210,42 @@
 
             $(function () {
                 $('#dg').datagrid({ toolbar: "#tb" }).datagrid({ data: getData(d) }).datagrid({
-                    onClickCell: function (index, field, value) {
-                        if (field !== "village_action") {
-                            console.log('clicked');
+                    onClickRow: function (index, row) {
+                        var overlays = map.getAllOverlays("polygon");
+                        overlays.forEach(function (overlay) {
+                            overlay.setOptions({
+                                strokeColor: "#2828FF"
+                            });
+                        });
+                        var string = row["village_action"];
+                        var demo = document.createElement('div');
+                        demo.innerHTML = string;
+                        var lng = Number(demo.children[0].getAttribute("data-lng"));
+                        var lat = Number(demo.children[0].getAttribute("data-lat"));
+                        var bounds = demo.children[0].getAttribute("data-bounds");
+                        map.setCenter([lng, lat]);
+                        if (bounds !== "null") {
+                            var overlays2 = map.getAllOverlays("polygon");
+                            overlays2.forEach(function (overlay) {
+                                var bounds2 = "[";
+                                overlay.getPath().forEach(function (coord) {
+                                    var lng = coord["lng"];
+                                    var lat = coord["lat"];
+                                    bounds2 += `[${String(lng)},${String(lat)}],`;
+                                });
+                                bounds2 = bounds2.slice(0, bounds2.length - 1);
+                                bounds2 += "]";
+                                if (bounds === bounds2) {
+                                    overlay.setOptions({
+                                        strokeColor: "#D00000"
+                                    });
+                                }
+                            });
+                            // get related buildings through api and use json to build table to right and attach events also remove old table to right
+                            // extract record location and guid, relocate map to location, remove buildings table from dom,
+                            // sned request to api to get related buildings in json string form and use it to build
+                            // a new table and bind events to it
                         }
-
-                        // extract record location and guid, relocate map to location, remove buildings table from dom,
-                        // sned request to api to get related buildings in json string form and use it to build
-                        // a new table and bind events to it
-
-
                     }
                 }).datagrid('clientPaging').datagrid('highlightRow', 0);
                 $('#dg2').datagrid({ toolbar: "#tb2" }).datagrid({ data: getData(d2) }).datagrid('clientPaging');
@@ -251,8 +277,67 @@
             });
         }
 
+        function editPoi(e) {
+            for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
+                document.getElementsByClassName("modalSmall")[i].remove();
+            }
+            var dataGuid = e.getAttribute("data-guid");
+
+        }
+
+        function openPois(e) {
+             e.classList.remove("layui-btn-primary");
+             e.classList.add("layui-btn-normal");
+             e.innerHTML += `<i class="fa fa-check"></i>`;
+             e.setAttribute("disabled", true);
+             var sibling = e.nextSibling;
+             sibling.classList.remove("layui-btn-normal");
+             sibling.classList.add("layui-btn-primary");
+             sibling.innerHTML = `否`;
+             sibling.removeAttribute("disabled");
+             var overlays = map.getAllOverlays("polygon");
+             console.log(overlays);
+             overlays.forEach(function (overlay) {
+                 overlay.show();
+             });
+        }
+
+         function closePois(e) {
+             e.classList.remove("layui-btn-primary");
+             e.classList.add("layui-btn-normal");
+             e.innerHTML += `<i class="fa fa-check"></i>`;
+             e.setAttribute("disabled", true);
+             var sibling = e.previousSibling;
+             sibling.classList.remove("layui-btn-normal");
+             sibling.classList.add("layui-btn-primary");
+             sibling.innerHTML = `是`;
+             sibling.removeAttribute("disabled");
+             var overlays = map.getAllOverlays("polygon");
+             console.log(overlays);
+             overlays.forEach(function (overlay) {
+                 overlay.hide();
+             });
+
+        }
+
         function closeModal(e) {
             e.parentElement.parentElement.remove();
+            $.ajax({
+                type: "get",
+                url: `./API/DetailsVillage?id=${dataGuid}`,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    var container = document.createElement('div');
+                    container.setAttribute("class", "modalSmall");
+                    container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><div class="mb-10"><span class="mr-5 bold">小区名称:</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div  class="mb-10"><span class="mr-5 bold">详细地址:</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div  class="mb-10"><span class="mr-5 bold">区域:</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div  class="mb-10"><span class="mr-5 bold">类型:</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div>`;
+                    //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
+                    document.getElementsByTagName("body")[0].appendChild(container);
+                },
+                error: function (item, err) {
+                    console.log(err);
+                }
+            });
         }
 
         /* 地图/数据 */
@@ -270,16 +355,22 @@
                 xq.forEach(function (XQ) {
                     if (XQ["VILLAGE_BOUNDS"] !== "null") {
                         new AMap.Polygon({
+                            strokeColor: "#2828FF",
+                            fillOpacity: 0,
                             bubble: true,
-                            fillOpacity: 0.4,
                             strokeWeight: 1,
                             path: JSON.parse(XQ["VILLAGE_BOUNDS"]),
                             map: map
                         });
                     }
-                    rowsXQ.push({ village_name: XQ["VILLAGE_NAME"], village_address: XQ["VILLAGE_ADDRESS"], village_region: XQ["VILLAGE_REGION"], village_type: XQ["VILLAGE_TYPE"], village_action: `<i class="fa fa-eye mr-5" data-guid="${XQ["VILLAGE_ID"]}" onclick="getPoiDetail(this);"></i><i class="fa fa-edit mr-5"></i><i class="fa fa-trash-o"></i>`, village_lng: XQ["VILLAGE_LNG"], village_lat: XQ["VILLAGE_LAT"] });
+                    rowsXQ.push({ village_name: XQ["VILLAGE_NAME"], village_address: XQ["VILLAGE_ADDRESS"], village_region: XQ["VILLAGE_REGION"], village_type: XQ["VILLAGE_TYPE"], village_action: `<i class="fa fa-eye mr-5" data-lng="${XQ["VILLAGE_LNG"]}" data-lat="${XQ["VILLAGE_LAT"]}" data-bounds="${XQ["VILLAGE_BOUNDS"]}" data-guid="${XQ["VILLAGE_ID"]}" onclick="getPoiDetail(this);"></i><i class="fa fa-edit mr-5" data-guid="${XQ["VILLAGE_ID"]}" onclick="editPoi(this);"></i><i class="fa fa-trash-o"></i>`, village_lng: XQ["VILLAGE_LNG"], village_lat: XQ["VILLAGE_LAT"] });
 
                 });
+                var container = document.createElement('div');
+                container.setAttribute("id", "buttonOpenClose");
+                container.innerHTML += `<span class="bb-lightblue pb-5px mr-20">是否显示小区边界</span><button type="button" class="layui-btn layui-btn-radius layui-btn-normal layui-btn-sm" onclick="openPois(this);" disabled>是 <i class="fa fa-check"></i></button><button type="button" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-sm" onclick="closePois(this);">否</button>`;
+                document.getElementsByTagName("body")[0].appendChild(container);
+                                
                 l.forEach(function (L) {
                     rowsL.push({ building_name: L["BUILDING_NAME"], building_address: L["BUILDING_ADDRESS"], building_action: "<i class=\"fa fa-eye mr-5 \"></i><i class=\"fa fa-edit mr-5 \"></i><i class=\"fa fa-trash-o \"></i>" });
                 });

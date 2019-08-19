@@ -64,6 +64,14 @@
     margin-right: 10px;
 }
 
+.mb-5 {
+    margin-bottom: 5px;
+}
+
+.clRedError {
+    color: red;
+}
+
 .mr-20 {
     margin-right: 20px;
 }
@@ -114,4 +122,8 @@
     top: 400px;
     right: 25px;
     padding: 10px;
+}
+
+.fr {
+    float:right;
 }

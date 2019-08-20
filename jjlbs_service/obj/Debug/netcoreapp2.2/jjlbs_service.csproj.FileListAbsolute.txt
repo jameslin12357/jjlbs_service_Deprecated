@@ -90,3 +90,4 @@ F:\jjlbs_service\jjlbs_service\obj\Debug\netcoreapp2.2\jjlbs_service.Views.pdb
 F:\jjlbs_service\jjlbs_service\obj\Debug\netcoreapp2.2\jjlbs_service.dll
 F:\jjlbs_service\jjlbs_service\obj\Debug\netcoreapp2.2\jjlbs_service.pdb
 F:\jjlbs_service\jjlbs_service\obj\Debug\netcoreapp2.2\jjlbs_service.csproj.CopyComplete
+C:\Users\mac\Desktop\jjlbs_service\jjlbs_service\obj\Debug\netcoreapp2.2\jjlbs_service.csprojAssemblyReference.cache

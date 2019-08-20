@@ -65,10 +65,12 @@
 
 
     @*<script language="javascript" src="~/lib/jquery/dist/jquery.js"></script>*@
+
     <script type="text/javascript" src="~/easyui/jquery.min.js"></script>
 
+
     <script type="text/javascript" src="~/easyui/jquery.easyui.min.js"></script>
-    <script src="https://webapi.amap.com/maps?v=1.4.15&key=5a757297a2ef60c6c50aa13e4fb8f311&plugin=AMap.PolyEditor,AMap.Scale,AMap.ControlBar,Map3D"></script>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=3cd18e86c129259575068fdb7f2522e0&plugin=AMap.PolyEditor,AMap.Scale,AMap.ControlBar,Map3D"></script>
     @*<script language="javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=5a757297a2ef60c6c50aa13e4fb8f311&plugin=Map3D,AMap.Scale,AMap.ControlBar,Amap.PolyEditor"></script>*@
     <script src="~/layui-v2.5.4/layui/layui.js" charset="utf-8"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -322,7 +324,7 @@
         }
 
 
-        function editPoiBounds(e,polygon) {
+        function editPoiBounds(e) {
             var errors = document.getElementsByClassName("clRedError");
             for (var i = 0; i < errors.length; i++) {
                 errors[i].remove();
@@ -332,32 +334,44 @@
             var village_address = inputs[1].value;
             var village_region = inputs[2].value;
             var village_type = inputs[3].value;
-            var village_bounds = polygon.getPath();
-            console.log(village_bounds);
+            var polygon;
+            var overlays = map.getAllOverlays("polygon");
+            overlays.forEach(function (overlay) {
+                if (overlay.getOptions()["strokeColor"] === "#D00000") {
+                    polygon = overlay;
+                }
+            });
+            village_bounds = "[";
+            polygon.getPath().forEach(function (coord) {
+                village_bounds += `[${String(coord["lng"])},${String(coord["lat"])}],`;
+            });
+            village_bounds = village_bounds.slice(0, village_bounds.length - 1);
+            village_bounds += "]";
             var dataGuid = e.getAttribute("data-guid");
-            //$.ajax({
-            //    type: "post",
-            //    url: `./API/EditVillageNoBounds?id=${dataGuid}`,
-            //    data: { "village_name": village_name, "village_address": village_address, "village_region": village_region, "village_type": village_type },
-            //    dataType: "json",
-            //    success: function (data) {
-            //        if (data.length !== 0) {
-            //            var div = document.createElement('div');
-            //            div.classList.add("clRedError");
-            //            data.forEach(function (error) {
-            //                div.innerHTML += `<p class="mb-5">${error}</p>`;
-            //            })
-            //            e.appendChild(div);
-            //        } else {
-            //            document.getElementsByClassName("modalSmall")[0].remove();
-            //            layer.msg("小区已编辑");
-            //        }
+           
+            $.ajax({
+                type: "post",
+                url: `./API/EditVillageBounds?id=${dataGuid}`,
+                data: { "village_name": village_name, "village_address": village_address, "village_region": village_region, "village_type": village_type, "village_bounds": village_bounds},
+                dataType: "json",
+                success: function (data) {
+                    if (data.length !== 0) {
+                        var div = document.createElement('div');
+                        div.classList.add("clRedError");
+                        data.forEach(function (error) {
+                            div.innerHTML += `<p class="mb-5">${error}</p>`;
+                        })
+                        e.appendChild(div);
+                    } else {
+                        document.getElementsByClassName("modalSmall")[0].remove();
+                        layer.msg("小区已编辑");
+                    }
 
-            //    },
-            //    error: function (item, err) {
-            //        console.log(err);
-            //    }
-            //});
+                },
+                error: function (item, err) {
+                    console.log(err);
+                }
+            });
 
         }
 
@@ -466,7 +480,7 @@
                         console.log(polygon);
                         var container = document.createElement('div');
                         container.setAttribute("class", "modalSmall");
-                        container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">编辑小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();editPoiBounds(this,${polygon});" data-guid=${dataGuid}>
+                        container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">编辑小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();editPoiBounds(this);" data-guid=${dataGuid}>
        <div class="layui-form-item">
         <label class="layui-form-label">小区名称</label>
         <div class="layui-input-inline">

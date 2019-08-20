@@ -24,7 +24,7 @@ namespace jjlbs_service.Controllers
             if (type == "all")
             {
                 Oraclehp ohp = new Oraclehp();
-                DataSet data = ohp.Query($"select RAWTOHEX(VILLAGE_ID) as VILLAGE_ID, VILLAGE_NAME, VILLAGE_ADDRESS, VILLAGE_REGION, VILLAGE_TYPE, VILLAGE_LNG, VILLAGE_LAT, VILLAGE_BOUNDS from lbs_village");
+                DataSet data = ohp.Query($"select RAWTOHEX(VILLAGE_ID) as VILLAGE_ID, VILLAGE_NAME, VILLAGE_ADDRESS, VILLAGE_REGION, VILLAGE_TYPE, VILLAGE_LNG, VILLAGE_LAT, VILLAGE_BOUNDS from lbs_village order by create_date desc");
                 //DataSet data2 = ohp.Query($"select * from lbs_building");
                 DataSet data2 = ohp.Query($"select* from lbs_building lb where lb.village_id = (select village_id from lbs_village lv where lv.village_name = '银河花都')");
                 string json = JsonConvert.SerializeObject(data);
@@ -86,7 +86,7 @@ namespace jjlbs_service.Controllers
             } else
             {
                 Oraclehp ohp = new Oraclehp();
-                DataSet data = ohp.Query($"update lbs_village set village_name ='{village_name}',village_address='{village_address}',village_region='{village_region}',village_type='{village_type}' where village_id = '{id}'");
+                DataSet data = ohp.Query($"begin update lbs_village set village_name ='{village_name}',village_address='{village_address}',village_region='{village_region}',village_type='{village_type}' where village_id = '{id}';commit;end;");
                 return "[]";
             }
         }
@@ -131,9 +131,20 @@ namespace jjlbs_service.Controllers
             else
             {
                 Oraclehp ohp = new Oraclehp();
-                DataSet data = ohp.Query($"update lbs_village set village_name ='{village_name}',village_address='{village_address}',village_region='{village_region}',village_type='{village_type}',village_bounds='{village_bounds}' where village_id = '{id}'");
+                DataSet data = ohp.Query($"begin update lbs_village set village_name ='{village_name}',village_address='{village_address}',village_region='{village_region}',village_type='{village_type}',village_bounds='{village_bounds}' where village_id = '{id}';commit;end;");
                 return "[]";
             }
+        }
+
+        public string DeleteVillage(string id)
+        {
+            if (id == null)
+            {
+                return "404";
+            }
+            Oraclehp ohp = new Oraclehp();
+            DataSet data = ohp.Query($"begin delete from lbs_village where village_id = '{id}';commit;end;");
+            return "[]";
         }
     }
     }

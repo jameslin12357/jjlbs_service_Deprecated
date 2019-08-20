@@ -375,6 +375,27 @@
 
         }
 
+        function deletePoiFinal(e) {
+            var dataGuid = e.getAttribute("data-guid");
+             $.ajax({
+                type: "post",
+                url: `./API/DeleteVillage?id=${dataGuid}`,
+                dataType: "json",
+                success: function (data) {
+                    if (data.length !== 0) {
+                        console.log('error');
+                    } else {
+                        document.getElementsByClassName("modalSmall")[0].remove();
+                        layer.msg("小区已删除");
+                    }
+
+                },
+                error: function (item, err) {
+                    console.log(err);
+                }
+            });
+        }
+
         //function boundsToggle(e) {
         //    console.log('w');
         //    if (e.checked) {
@@ -383,6 +404,18 @@
         //        console.log('unchecked');
         //    }
         //}
+        function deletePoi(e) {
+            for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
+                document.getElementsByClassName("modalSmall")[i].remove();
+            }
+            var dataGuid = e.getAttribute("data-guid");
+            var container = document.createElement('div');
+            container.setAttribute("class", "modalSmall");
+            container.classList.add("modalCentered");
+            container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">删除小区</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div>
+                <div class="mb-15 tc">确定删除小区?</div><div class="tr"><button type="button" class="layui-btn layui-btn-danger" data-guid=${dataGuid} onclick="deletePoiFinal(this);">删除</button></div></div>`;
+            document.getElementsByTagName("body")[0].appendChild(container);
+        }
 
         function editPoi(e) {
             for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
@@ -462,22 +495,22 @@
                         document.getElementsByTagName("body")[0].appendChild(container);
                         form.render();
                     } else {
-                        var polygon;
-                        var overlays = map.getAllOverlays("polygon");
-                        overlays.forEach(function (overlay) {
-                            var bounds2 = "[";
-                            overlay.getPath().forEach(function (coord) {
-                                var lng = coord["lng"];
-                                var lat = coord["lat"];
-                                bounds2 += `[${String(lng)},${String(lat)}],`;
-                            });
-                            bounds2 = bounds2.slice(0, bounds2.length - 1);
-                            bounds2 += "]";
-                            if (data["ds"][0]["VILLAGE_BOUNDS"] === bounds2) {
-                                polygon = overlay;
-                            }
-                        });
-                        console.log(polygon);
+                        //var polygon;
+                        //var overlays = map.getAllOverlays("polygon");
+                        //overlays.forEach(function (overlay) {
+                        //    var bounds2 = "[";
+                        //    overlay.getPath().forEach(function (coord) {
+                        //        var lng = coord["lng"];
+                        //        var lat = coord["lat"];
+                        //        bounds2 += `[${String(lng)},${String(lat)}],`;
+                        //    });
+                        //    bounds2 = bounds2.slice(0, bounds2.length - 1);
+                        //    bounds2 += "]";
+                        //    if (data["ds"][0]["VILLAGE_BOUNDS"] === bounds2) {
+                        //        polygon = overlay;
+                        //    }
+                        //});
+                        //console.log(polygon);
                         var container = document.createElement('div');
                         container.setAttribute("class", "modalSmall");
                         container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">编辑小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();editPoiBounds(this);" data-guid=${dataGuid}>
@@ -628,7 +661,7 @@
                         });
 
                     }
-                    rowsXQ.push({ village_name: XQ["VILLAGE_NAME"], village_address: XQ["VILLAGE_ADDRESS"], village_region: XQ["VILLAGE_REGION"], village_type: XQ["VILLAGE_TYPE"], village_action: `<i class="fa fa-eye mr-5" data-lng="${XQ["VILLAGE_LNG"]}" data-lat="${XQ["VILLAGE_LAT"]}" data-bounds="${XQ["VILLAGE_BOUNDS"]}" data-guid="${XQ["VILLAGE_ID"]}" onclick="getPoiDetail(this);"></i><i class="fa fa-edit mr-5" data-guid="${XQ["VILLAGE_ID"]}" onclick="editPoi(this);"></i><i class="fa fa-trash-o"></i>`, village_lng: XQ["VILLAGE_LNG"], village_lat: XQ["VILLAGE_LAT"] });
+                    rowsXQ.push({ village_name: XQ["VILLAGE_NAME"], village_address: XQ["VILLAGE_ADDRESS"], village_region: XQ["VILLAGE_REGION"], village_type: XQ["VILLAGE_TYPE"], village_action: `<i class="fa fa-eye mr-5" data-lng="${XQ["VILLAGE_LNG"]}" data-lat="${XQ["VILLAGE_LAT"]}" data-bounds="${XQ["VILLAGE_BOUNDS"]}" data-guid="${XQ["VILLAGE_ID"]}" onclick="getPoiDetail(this);"></i><i class="fa fa-edit mr-5" data-guid="${XQ["VILLAGE_ID"]}" onclick="editPoi(this);"></i><i class="fa fa-trash-o" data-guid="${XQ["VILLAGE_ID"]}" onclick="deletePoi(this);"></i>`, village_lng: XQ["VILLAGE_LNG"], village_lat: XQ["VILLAGE_LAT"] });
 
                 });
                 var container = document.createElement('div');

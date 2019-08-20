@@ -81,6 +81,10 @@
     margin-bottom: 10px;
 }
 
+.mb-15 {
+    margin-bottom: 15px;
+}
+
 .mb-10 {
     margin-bottom: 10px;
 }
@@ -110,6 +114,12 @@
     padding: 25px;
 }
 
+.modalCentered {
+    right: 33%!important;
+    left: 33%!important;
+    top: 33%!important;
+}
+
 .bold {
     font-weight: bold;
 }
@@ -126,4 +136,12 @@
 
 .fr {
     float:right;
+}
+
+.tc {
+    text-align: center;
+}
+
+.tr {
+    text-align: right;
 }

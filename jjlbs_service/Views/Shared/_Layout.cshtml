@@ -68,13 +68,14 @@
     <script type="text/javascript" src="~/easyui/jquery.min.js"></script>
 
     <script type="text/javascript" src="~/easyui/jquery.easyui.min.js"></script>
-    <script language="javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=5a757297a2ef60c6c50aa13e4fb8f311&plugin=Map3D,AMap.Scale,AMap.ControlBar,Amap.PolyEditor"></script>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=5a757297a2ef60c6c50aa13e4fb8f311&plugin=AMap.PolyEditor,AMap.Scale,AMap.ControlBar,Map3D"></script>
+    @*<script language="javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=5a757297a2ef60c6c50aa13e4fb8f311&plugin=Map3D,AMap.Scale,AMap.ControlBar,Amap.PolyEditor"></script>*@
     <script src="~/layui-v2.5.4/layui/layui.js" charset="utf-8"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script language="javascript">
-            
+
         var form, layer;
-        layui.use(['form', 'layedit', 'laydate','layer'], function () {
+        layui.use(['form', 'layedit', 'laydate', 'layer'], function () {
             form = layui.form
                 , layer = layui.layer
                 , layedit = layui.layedit
@@ -295,23 +296,23 @@
             var village_region = inputs[2].value;
             var village_type = inputs[3].value;
             var dataGuid = e.getAttribute("data-guid");
-             $.ajax({
+            $.ajax({
                 type: "post",
                 url: `./API/EditVillageNoBounds?id=${dataGuid}`,
-                data: {"village_name":village_name,"village_address":village_address,"village_region":village_region,"village_type":village_type},
+                data: { "village_name": village_name, "village_address": village_address, "village_region": village_region, "village_type": village_type },
                 dataType: "json",
-                 success: function (data) {
-                     if (data.length !== 0) {
-                         var div = document.createElement('div');
-                         div.classList.add("clRedError");
-                         data.forEach(function (error) {
-                             div.innerHTML += `<p class="mb-5">${error}</p>`;
-                         })
-                         e.appendChild(div);
-                     } else {
-                         document.getElementsByClassName("modalSmall")[0].remove();
-                         layer.msg("小区已编辑");
-                     }
+                success: function (data) {
+                    if (data.length !== 0) {
+                        var div = document.createElement('div');
+                        div.classList.add("clRedError");
+                        data.forEach(function (error) {
+                            div.innerHTML += `<p class="mb-5">${error}</p>`;
+                        })
+                        e.appendChild(div);
+                    } else {
+                        document.getElementsByClassName("modalSmall")[0].remove();
+                        layer.msg("小区已编辑");
+                    }
                 },
                 error: function (item, err) {
                     console.log(err);
@@ -320,8 +321,8 @@
 
         }
 
-        
-        function editPoiBounds(e) {
+
+        function editPoiBounds(e,polygon) {
             var errors = document.getElementsByClassName("clRedError");
             for (var i = 0; i < errors.length; i++) {
                 errors[i].remove();
@@ -331,30 +332,32 @@
             var village_address = inputs[1].value;
             var village_region = inputs[2].value;
             var village_type = inputs[3].value;
+            var village_bounds = polygon.getPath();
+            console.log(village_bounds);
             var dataGuid = e.getAttribute("data-guid");
-             $.ajax({
-                type: "post",
-                url: `./API/EditVillageNoBounds?id=${dataGuid}`,
-                data: {"village_name":village_name,"village_address":village_address,"village_region":village_region,"village_type":village_type},
-                dataType: "json",
-                 success: function (data) {
-                     if (data.length !== 0) {
-                         var div = document.createElement('div');
-                         div.classList.add("clRedError");
-                         data.forEach(function (error) {
-                             div.innerHTML += `<p class="mb-5">${error}</p>`;
-                         })
-                         e.appendChild(div);
-                     } else {
-                         document.getElementsByClassName("modalSmall")[0].remove();
-                         layer.msg("小区已编辑");
-                     }
+            //$.ajax({
+            //    type: "post",
+            //    url: `./API/EditVillageNoBounds?id=${dataGuid}`,
+            //    data: { "village_name": village_name, "village_address": village_address, "village_region": village_region, "village_type": village_type },
+            //    dataType: "json",
+            //    success: function (data) {
+            //        if (data.length !== 0) {
+            //            var div = document.createElement('div');
+            //            div.classList.add("clRedError");
+            //            data.forEach(function (error) {
+            //                div.innerHTML += `<p class="mb-5">${error}</p>`;
+            //            })
+            //            e.appendChild(div);
+            //        } else {
+            //            document.getElementsByClassName("modalSmall")[0].remove();
+            //            layer.msg("小区已编辑");
+            //        }
 
-                },
-                error: function (item, err) {
-                    console.log(err);
-                }
-            });
+            //    },
+            //    error: function (item, err) {
+            //        console.log(err);
+            //    }
+            //});
 
         }
 
@@ -382,126 +385,126 @@
                         var container = document.createElement('div');
                         container.setAttribute("class", "modalSmall");
                         container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">编辑小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();editPoiNoBounds(this);" data-guid=${dataGuid}>
-   <div class="layui-form-item">
-    <label class="layui-form-label">小区名称</label>
-    <div class="layui-input-inline">
-      <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_NAME"]}">
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label class="layui-form-label">详细地址</label>
-    <div class="layui-input-inline">
-      <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_ADDRESS"]}">
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label class="layui-form-label">区域</label>
-    <div class="layui-input-inline">
-      <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_REGION"]}">
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label class="layui-form-label">类型</label>
-    <div class="layui-input-inline">
-      <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_TYPE"]}">
-    </div>
-  </div>
-  <!--<div class="layui-form-item">
-    <label class="layui-form-label">区域</label>
-    <div class="layui-input-block">
-      <select name="village_region" lay-filter="aihao">
-        <option value="hsq">内蒙古自治区/赤峰市/红山区</option>
-        <option value="ybsq">内蒙古自治区/赤峰市/元宝山区</option>
-        <option value="ssq">内蒙古自治区/赤峰市/松山区/option>
-        <option value="alkexq">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
-        <option value="blzq">内蒙古自治区/赤峰市/巴林左旗</option>
-        <option value="blyq">内蒙古自治区/赤峰市/巴林右旗</option>
-        <option value="lxx">内蒙古自治区/赤峰市/林西县</option>
-        <option value="ksktq">内蒙古自治区/赤峰市/克什克腾旗</option>
-        <option value="wntq">内蒙古自治区/赤峰市/翁牛特旗</option>
-        <option value="klxq">内蒙古自治区/赤峰市/喀喇沁旗</option>
-        <option value="ahq">内蒙古自治区/赤峰市/敖汉旗</option>
-      </select>
-    </div>
-  </div>
- <div class="layui-form-item">
-    <label class="layui-form-label">类型</label>
-    <div class="layui-input-block">
-      <select name="village_type" lay-filter="aihao">
-        <option value="zzxq">商务住宅;住宅区;住宅小区</option>
-      </select>
-    </div>
-  </div>-->
+       <div class="layui-form-item">
+        <label class="layui-form-label">小区名称</label>
+        <div class="layui-input-inline">
+          <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_NAME"]}">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">详细地址</label>
+        <div class="layui-input-inline">
+          <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_ADDRESS"]}">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">区域</label>
+        <div class="layui-input-inline">
+          <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_REGION"]}">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-inline">
+          <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_TYPE"]}">
+        </div>
+      </div>
+      <!--<div class="layui-form-item">
+        <label class="layui-form-label">区域</label>
+        <div class="layui-input-block">
+          <select name="village_region" lay-filter="aihao">
+            <option value="hsq">内蒙古自治区/赤峰市/红山区</option>
+            <option value="ybsq">内蒙古自治区/赤峰市/元宝山区</option>
+            <option value="ssq">内蒙古自治区/赤峰市/松山区/option>
+            <option value="alkexq">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
+            <option value="blzq">内蒙古自治区/赤峰市/巴林左旗</option>
+            <option value="blyq">内蒙古自治区/赤峰市/巴林右旗</option>
+            <option value="lxx">内蒙古自治区/赤峰市/林西县</option>
+            <option value="ksktq">内蒙古自治区/赤峰市/克什克腾旗</option>
+            <option value="wntq">内蒙古自治区/赤峰市/翁牛特旗</option>
+            <option value="klxq">内蒙古自治区/赤峰市/喀喇沁旗</option>
+            <option value="ahq">内蒙古自治区/赤峰市/敖汉旗</option>
+          </select>
+        </div>
+      </div>
+     <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-block">
+          <select name="village_type" lay-filter="aihao">
+            <option value="zzxq">商务住宅;住宅区;住宅小区</option>
+          </select>
+        </div>
+      </div>-->
 
 <div class="layui-form-item">
-    <div class="layui-input-block">
-      <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
-    </div>
-  </div>
-  </div>
- 
+        <div class="layui-input-block">
+          <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
+        </div>
+      </div>
+      </div>
+
 </form>`;
                         //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
                         document.getElementsByTagName("body")[0].appendChild(container);
                         form.render();
                     } else {
-                        //var polygon;
-                        //var overlays = map.getAllOverlays("polygon");
-                        //overlays.forEach(function (overlay) {
-                        //    var bounds2 = "[";
-                        //    overlay.getPath().forEach(function (coord) {
-                        //        var lng = coord["lng"];
-                        //        var lat = coord["lat"];
-                        //        bounds2 += `[${String(lng)},${String(lat)}],`;
-                        //    });
-                        //    bounds2 = bounds2.slice(0, bounds2.length - 1);
-                        //    bounds2 += "]";
-                        //    if (data["ds"][0]["VILLAGE_BOUNDS"] === bounds2) {
-                        //        polygon = overlay;
-                        //    }
-                        //});
-
+                        var polygon;
+                        var overlays = map.getAllOverlays("polygon");
+                        overlays.forEach(function (overlay) {
+                            var bounds2 = "[";
+                            overlay.getPath().forEach(function (coord) {
+                                var lng = coord["lng"];
+                                var lat = coord["lat"];
+                                bounds2 += `[${String(lng)},${String(lat)}],`;
+                            });
+                            bounds2 = bounds2.slice(0, bounds2.length - 1);
+                            bounds2 += "]";
+                            if (data["ds"][0]["VILLAGE_BOUNDS"] === bounds2) {
+                                polygon = overlay;
+                            }
+                        });
+                        console.log(polygon);
                         var container = document.createElement('div');
                         container.setAttribute("class", "modalSmall");
-                        container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">编辑小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();editPoiBounds(this);" data-guid=${dataGuid}>
-   <div class="layui-form-item">
-    <label class="layui-form-label">小区名称</label>
-    <div class="layui-input-inline">
-      <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_NAME"]}">
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label class="layui-form-label">详细地址</label>
-    <div class="layui-input-inline">
-      <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_ADDRESS"]}">
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label class="layui-form-label">区域</label>
-    <div class="layui-input-inline">
-      <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_REGION"]}">
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label class="layui-form-label">类型</label>
-    <div class="layui-input-inline">
-      <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_TYPE"]}">
-    </div>
-  </div>
-   <!--<div class="layui-form-item">
-    <label class="layui-form-label">开关-默认关</label>
-    <div class="layui-input-block">
-      <input type="checkbox" name="close" lay-skin="switch" lay-text="ON|OFF" lay-filter="switch1">
-    </div>
-  </div>-->
+                        container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">编辑小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();editPoiBounds(this,${polygon});" data-guid=${dataGuid}>
+       <div class="layui-form-item">
+        <label class="layui-form-label">小区名称</label>
+        <div class="layui-input-inline">
+          <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_NAME"]}">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">详细地址</label>
+        <div class="layui-input-inline">
+          <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_ADDRESS"]}">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">区域</label>
+        <div class="layui-input-inline">
+          <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_REGION"]}">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-inline">
+          <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_TYPE"]}">
+        </div>
+      </div>
+       <!--<div class="layui-form-item">
+        <label class="layui-form-label">开关-默认关</label>
+        <div class="layui-input-block">
+          <input type="checkbox" name="close" lay-skin="switch" lay-text="ON|OFF" lay-filter="switch1">
+        </div>
+      </div>-->
 
 <div class="layui-form-item">
-    <div class="layui-input-block">
-      <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
-    </div>
-  </div>
-  </div>
- 
+        <div class="layui-input-block">
+          <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
+        </div>
+      </div>
+      </div>
+
 </form>`;
                         //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
                         document.getElementsByTagName("body")[0].appendChild(container);
@@ -518,7 +521,7 @@
                     }
                 },
                 error: function (item, err) {
-                       
+
                     console.log(err);
                 }
             });
@@ -526,37 +529,37 @@
         }
 
         function openPois(e) {
-             e.classList.remove("layui-btn-primary");
-             e.classList.add("layui-btn-normal");
-             e.innerHTML += `<i class="fa fa-check"></i>`;
-             e.setAttribute("disabled", true);
-             var sibling = e.nextSibling;
-             sibling.classList.remove("layui-btn-normal");
-             sibling.classList.add("layui-btn-primary");
-             sibling.innerHTML = `否`;
-             sibling.removeAttribute("disabled");
-             var overlays = map.getAllOverlays("polygon");
-             console.log(overlays);
-             overlays.forEach(function (overlay) {
-                 overlay.show();
-             });
+            e.classList.remove("layui-btn-primary");
+            e.classList.add("layui-btn-normal");
+            e.innerHTML += `<i class="fa fa-check"></i>`;
+            e.setAttribute("disabled", true);
+            var sibling = e.nextSibling;
+            sibling.classList.remove("layui-btn-normal");
+            sibling.classList.add("layui-btn-primary");
+            sibling.innerHTML = `否`;
+            sibling.removeAttribute("disabled");
+            var overlays = map.getAllOverlays("polygon");
+            console.log(overlays);
+            overlays.forEach(function (overlay) {
+                overlay.show();
+            });
         }
 
-         function closePois(e) {
-             e.classList.remove("layui-btn-primary");
-             e.classList.add("layui-btn-normal");
-             e.innerHTML += `<i class="fa fa-check"></i>`;
-             e.setAttribute("disabled", true);
-             var sibling = e.previousSibling;
-             sibling.classList.remove("layui-btn-normal");
-             sibling.classList.add("layui-btn-primary");
-             sibling.innerHTML = `是`;
-             sibling.removeAttribute("disabled");
-             var overlays = map.getAllOverlays("polygon");
-             console.log(overlays);
-             overlays.forEach(function (overlay) {
-                 overlay.hide();
-             });
+        function closePois(e) {
+            e.classList.remove("layui-btn-primary");
+            e.classList.add("layui-btn-normal");
+            e.innerHTML += `<i class="fa fa-check"></i>`;
+            e.setAttribute("disabled", true);
+            var sibling = e.previousSibling;
+            sibling.classList.remove("layui-btn-normal");
+            sibling.classList.add("layui-btn-primary");
+            sibling.innerHTML = `是`;
+            sibling.removeAttribute("disabled");
+            var overlays = map.getAllOverlays("polygon");
+            console.log(overlays);
+            overlays.forEach(function (overlay) {
+                overlay.hide();
+            });
 
         }
 
@@ -602,11 +605,14 @@
                             path: JSON.parse(XQ["VILLAGE_BOUNDS"]),
                             map: map
                         });
-                         
-                        var polylineEditor = new AMap.PolyEditor(map, polygon); 
-                        polygon.on('dblclick', polylineEditor.open());
-                        polygon.on('rightclick', polylineEditor.close());
-                         
+
+                        var polylineEditor = new AMap.PolyEditor(map, polygon);
+                        polygon.on('dblclick', function () { polylineEditor.open(); });
+                        polygon.on('rightclick', function () { polylineEditor.close(); });
+                        polygon.on('click', function () {
+                            console.log(polygon.getPath());
+                        });
+
                     }
                     rowsXQ.push({ village_name: XQ["VILLAGE_NAME"], village_address: XQ["VILLAGE_ADDRESS"], village_region: XQ["VILLAGE_REGION"], village_type: XQ["VILLAGE_TYPE"], village_action: `<i class="fa fa-eye mr-5" data-lng="${XQ["VILLAGE_LNG"]}" data-lat="${XQ["VILLAGE_LAT"]}" data-bounds="${XQ["VILLAGE_BOUNDS"]}" data-guid="${XQ["VILLAGE_ID"]}" onclick="getPoiDetail(this);"></i><i class="fa fa-edit mr-5" data-guid="${XQ["VILLAGE_ID"]}" onclick="editPoi(this);"></i><i class="fa fa-trash-o"></i>`, village_lng: XQ["VILLAGE_LNG"], village_lat: XQ["VILLAGE_LAT"] });
 
@@ -615,7 +621,7 @@
                 container.setAttribute("id", "buttonOpenClose");
                 container.innerHTML += `<span class="bb-lightblue pb-5px mr-20">是否显示小区边界</span><button type="button" class="layui-btn layui-btn-radius layui-btn-normal layui-btn-sm" onclick="openPois(this);" disabled>是 <i class="fa fa-check"></i></button><button type="button" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-sm" onclick="closePois(this);">否</button>`;
                 document.getElementsByTagName("body")[0].appendChild(container);
-                                
+
                 l.forEach(function (L) {
                     rowsL.push({ building_name: L["BUILDING_NAME"], building_address: L["BUILDING_ADDRESS"], building_action: "<i class=\"fa fa-eye mr-5 \"></i><i class=\"fa fa-edit mr-5 \"></i><i class=\"fa fa-trash-o \"></i>" });
                 });
@@ -627,6 +633,6 @@
         });
     </script>
 
-    
+
 </body>
 </html>

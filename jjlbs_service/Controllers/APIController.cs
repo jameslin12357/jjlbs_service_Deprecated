@@ -26,14 +26,121 @@ namespace jjlbs_service.Controllers
                 Oraclehp ohp = new Oraclehp();
                 DataSet data = ohp.Query($"select RAWTOHEX(VILLAGE_ID) as VILLAGE_ID, VILLAGE_NAME, VILLAGE_ADDRESS, VILLAGE_REGION, VILLAGE_TYPE, VILLAGE_LNG, VILLAGE_LAT, VILLAGE_BOUNDS from lbs_village order by create_date desc");
                 //DataSet data2 = ohp.Query($"select * from lbs_building");
-                DataSet data2 = ohp.Query($"select* from lbs_building lb where lb.village_id = (select village_id from lbs_village lv where lv.village_name = '银河花都')");
+                //DataSet data2 = ohp.Query($"select RAWTOHEX(BUILDING_ID) as BUILDING_ID, BUILDING_NAME, BUILDING_ADDRESS, LNG, LAT from lbs_building lb where lb.village_id = (select village_id from lbs_village lv where lv.village_name = '元电职工住宅A区')");
+                DataSet data2 = ohp.Query($"select RAWTOHEX(BUILDING_ID) as BUILDING_ID, BUILDING_NAME, BUILDING_ADDRESS, LNG, LAT from lbs_building lb");
+                DataSet data3 = ohp.Query($"select RAWTOHEX(BUILDING_ID) as BUILDING_ID, BUILDING_NAME, BUILDING_ADDRESS, LNG, LAT from lbs_building lb where lb.village_id = (select village_id from lbs_village lv where lv.village_name = '元电职工住宅A区')");
+
                 string json = JsonConvert.SerializeObject(data);
                 string json2 = JsonConvert.SerializeObject(data2);
+                string json3 = JsonConvert.SerializeObject(data3);
+
                 string jsonf = "[";
-                jsonf += json + "," + json2 + "]";
+                jsonf += json + "," + json2 + "," + json3 + "]";
                 return jsonf;
             }
             return "apple";
+        }
+
+        public string IndexByRegion(string type)
+        {
+            if (type == null)
+            {
+                return "404";
+            }
+            string region = "";
+            string village = "";
+            Oraclehp ohpAll = new Oraclehp();
+            DataSet dataAll = ohpAll.Query($"select RAWTOHEX(VILLAGE_ID) as VILLAGE_ID, VILLAGE_NAME, VILLAGE_ADDRESS, VILLAGE_REGION, VILLAGE_TYPE, VILLAGE_LNG, VILLAGE_LAT, VILLAGE_BOUNDS from lbs_village order by create_date desc");
+            //DataSet data2 = ohp.Query($"select * from lbs_building");
+            DataSet data2All = ohpAll.Query($"select RAWTOHEX(BUILDING_ID) as BUILDING_ID, BUILDING_NAME, BUILDING_ADDRESS, LNG, LAT from lbs_building lb");
+
+            DataSet data3All = ohpAll.Query($"select RAWTOHEX(BUILDING_ID) as BUILDING_ID, BUILDING_NAME, BUILDING_ADDRESS, LNG, LAT from lbs_building lb where lb.village_id = (select village_id from lbs_village lv where lv.village_name = '元电职工住宅A区')");
+
+            string jsonAll = JsonConvert.SerializeObject(dataAll);
+            string json2All = JsonConvert.SerializeObject(data2All);
+            string json3All = JsonConvert.SerializeObject(data3All);
+
+            string jsonfAll = "[";
+            jsonfAll += jsonAll + "," + json2All + "," + json3All + "]";
+            if (type == "all")
+            {
+                return jsonfAll;
+            }
+            if (type == "hsq")
+            {
+                region = "内蒙古自治区/赤峰市/红山区";
+                village = "怡康家园(五道街)";
+            }
+            else if (type == "ybsq")
+            {
+                region = "内蒙古自治区/赤峰市/元宝山区";
+                village = "锦绣花苑";
+            }
+            else if (type == "ssq")
+            {
+                region = "内蒙古自治区/赤峰市/松山区";
+                village = "水利局家属楼(银河路)";
+            }
+            else if (type == "alkexq")
+            {
+                region = "内蒙古自治区/赤峰市/阿鲁科尔沁旗";
+                village = "尚景花园";
+            }
+            else if (type == "blzq")
+            {
+                region = "内蒙古自治区/赤峰市/巴林左旗";
+                village = "上京小区";
+            }
+            else if (type == "blyq")
+            {
+                region = "内蒙古自治区/赤峰市/巴林右旗";
+                village = "珠峰骏景";
+            }
+            else if (type == "lxx")
+            {
+                region = "内蒙古自治区/赤峰市/林西县";
+                village = "中昊小区";
+            }
+            else if (type == "ksktq")
+            {
+                region = "内蒙古自治区/赤峰市/克什克腾旗";
+                village = "如意家园(如意家园B区南)";
+            }
+            else if (type == "wntq")
+            {
+                region = "内蒙古自治区/赤峰市/翁牛特旗";
+                village = "税务A区";
+            }
+            else if (type == "klxq")
+            {
+                region = "内蒙古自治区/赤峰市/喀喇沁旗";
+                village = "河北街道向阳社区";
+            }
+            else if (type == "ncx")
+            {
+                region = "内蒙古自治区/赤峰市/宁城县";
+                village = "和谐家园(昌盛街)";
+            }
+            else if (type == "ahq")
+            {
+                region = "内蒙古自治区/赤峰市/敖汉旗";
+                village = "锦绣花园";
+            }
+            Oraclehp ohp = new Oraclehp();
+                DataSet data = ohp.Query($"select RAWTOHEX(VILLAGE_ID) as VILLAGE_ID, VILLAGE_NAME, VILLAGE_ADDRESS, VILLAGE_REGION, VILLAGE_TYPE, VILLAGE_LNG, VILLAGE_LAT, VILLAGE_BOUNDS from lbs_village where village_region='{region}' order by create_date desc");
+            //DataSet data2 = ohp.Query($"select * from lbs_building");
+            DataSet data2 = ohp.Query($"select RAWTOHEX(BUILDING_ID) as BUILDING_ID, BUILDING_NAME, BUILDING_ADDRESS, LNG, LAT from lbs_building lb where region='{region}'");
+
+            DataSet data3 = ohp.Query($"select RAWTOHEX(BUILDING_ID) as BUILDING_ID, BUILDING_NAME, BUILDING_ADDRESS, LNG, LAT from lbs_building lb where lb.village_id = (select village_id from lbs_village lv where lv.village_name = '{village}')");
+                string json = JsonConvert.SerializeObject(data);
+                string json2 = JsonConvert.SerializeObject(data2);
+            string json3 = JsonConvert.SerializeObject(data3);
+
+            string jsonf = "[";
+            jsonf += json + "," + json2 + "," + json3 + "]";
+            return jsonf;
+
+
         }
 
         public string DetailsVillage(string id)
@@ -51,6 +158,38 @@ namespace jjlbs_service.Controllers
                 string json = JsonConvert.SerializeObject(data);
                 return json;
             }
+
+        public string DetailsBuilding(string id)
+        {
+            if (id == null)
+            {
+                return "404";
+            }
+            Oraclehp ohp = new Oraclehp();
+            DataSet data = ohp.Query($"select * from lbs_building where BUILDING_ID = '{id}'");
+            if (data.Tables.Count == 0)
+            {
+                return "404";
+            }
+            string json = JsonConvert.SerializeObject(data);
+            return json;
+        }
+
+        public string VillageBuildings(string id)
+        {
+            if (id == null)
+            {
+                return "404";
+            }
+            Oraclehp ohp = new Oraclehp();
+            DataSet data = ohp.Query($"select RAWTOHEX(BUILDING_ID) as BUILDING_ID, BUILDING_NAME, BUILDING_ADDRESS, LNG, LAT from LBS_BUILDING t where t.village_id = '{id}'");
+            if (data.Tables.Count == 0)
+            {
+                return "404";
+            }
+            string json = JsonConvert.SerializeObject(data);
+            return json;
+        }
 
 
         public string EditVillageNoBounds(string id)
@@ -136,6 +275,35 @@ namespace jjlbs_service.Controllers
             }
         }
 
+        public string EditBuilding(string id)
+        {
+            if (id == null)
+            {
+                return "404";
+            }
+            string building_name = HttpContext.Request.Form["building_name"];
+            string building_address = HttpContext.Request.Form["building_address"];
+            List<string> errors = new List<string>();
+            if (building_name.Length == 0)
+            {
+                errors.Add("楼宇名称不能为空");
+            }
+            if (building_address.Length == 0)
+            {
+                errors.Add("详细地址不能为空");
+            }
+            if (errors.Count > 0)
+            {
+                return JsonConvert.SerializeObject(errors);
+            }
+            else
+            {
+                Oraclehp ohp = new Oraclehp();
+                DataSet data = ohp.Query($"begin update lbs_building set building_name ='{building_name}',building_address='{building_address}' where building_id = '{id}';commit;end;");
+                return "[]";
+            }
+        }
+
         public string DeleteVillage(string id)
         {
             if (id == null)
@@ -144,6 +312,17 @@ namespace jjlbs_service.Controllers
             }
             Oraclehp ohp = new Oraclehp();
             DataSet data = ohp.Query($"begin delete from lbs_village where village_id = '{id}';commit;end;");
+            return "[]";
+        }
+
+        public string DeleteBuilding(string id)
+        {
+            if (id == null)
+            {
+                return "404";
+            }
+            Oraclehp ohp = new Oraclehp();
+            DataSet data = ohp.Query($"begin delete from lbs_building where building_id = '{id}';commit;end;");
             return "[]";
         }
     }

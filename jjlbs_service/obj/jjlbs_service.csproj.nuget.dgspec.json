@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\jjlbs_service\\jjlbs_service\\jjlbs_service.csproj": {}
+    "C:\\Users\\mac\\Desktop\\jjlbs_service\\jjlbs_service\\jjlbs_service.csproj": {}
   },
   "projects": {
-    "E:\\jjlbs_service\\jjlbs_service\\jjlbs_service.csproj": {
+    "C:\\Users\\mac\\Desktop\\jjlbs_service\\jjlbs_service\\jjlbs_service.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\jjlbs_service\\jjlbs_service\\jjlbs_service.csproj",
+        "projectUniqueName": "C:\\Users\\mac\\Desktop\\jjlbs_service\\jjlbs_service\\jjlbs_service.csproj",
         "projectName": "jjlbs_service",
-        "projectPath": "E:\\jjlbs_service\\jjlbs_service\\jjlbs_service.csproj",
+        "projectPath": "C:\\Users\\mac\\Desktop\\jjlbs_service\\jjlbs_service\\jjlbs_service.csproj",
         "packagesPath": "C:\\Users\\mac\\.nuget\\packages\\",
-        "outputPath": "E:\\jjlbs_service\\jjlbs_service\\obj\\",
+        "outputPath": "C:\\Users\\mac\\Desktop\\jjlbs_service\\jjlbs_service\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

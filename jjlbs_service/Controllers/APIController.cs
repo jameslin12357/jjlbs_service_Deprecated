@@ -191,6 +191,140 @@ namespace jjlbs_service.Controllers
             return json;
         }
 
+        public string CreateVillage()
+        {
+            string village_name = HttpContext.Request.Form["village_name"];
+            string village_address = HttpContext.Request.Form["village_address"];
+            string village_region = HttpContext.Request.Form["village_region"];
+            string village_type = HttpContext.Request.Form["village_type"];
+            string village_bounds = HttpContext.Request.Form["village_bounds"];
+            string village_x = HttpContext.Request.Form["village_x"];
+            string village_y = HttpContext.Request.Form["village_y"];
+            string village_lng = HttpContext.Request.Form["village_lng"];
+            string village_lat = HttpContext.Request.Form["village_lat"];
+            string source = HttpContext.Request.Form["source"];
+            List<string> errors = new List<string>();
+            if (village_name.Length == 0)
+            {
+                errors.Add("小区名称不能为空");
+            }
+            if (village_address.Length == 0)
+            {
+                errors.Add("详细地址不能为空");
+            }
+            if (village_region.Length == 0)
+            {
+                errors.Add("区域不能为空");
+            }
+            if (village_type.Length == 0)
+            {
+                errors.Add("类型不能为空");
+            }
+            if (village_bounds.Length == 0)
+            {
+                errors.Add("小区边界不能为空");
+            }
+            if (village_x.Length == 0)
+            {
+                errors.Add("小区经度不能为空");
+            }
+            if (village_y.Length == 0)
+            {
+                errors.Add("小区纬度不能为空");
+            }
+            if (village_lng.Length == 0)
+            {
+                errors.Add("小区经度不能为空");
+            }
+            if (village_lng.Length == 0)
+            {
+                errors.Add("小区纬度不能为空");
+            }
+            if (source.Length == 0)
+            {
+                errors.Add("小区来源不能为空");
+            }
+            if (errors.Count > 0)
+            {
+                return JsonConvert.SerializeObject(errors);
+            }
+            else
+            {
+                Oraclehp ohp = new Oraclehp();
+                DataSet data = ohp.Query($"begin insert into lbs_village (village_name, village_address, village_region, village_type, village_bounds, village_x, village_y, village_lng, village_lat, source) values ('{village_name}','{village_address}','{village_region}','{village_type}', '{village_bounds}','{village_x}','{village_y}','{village_lat}','{village_lng}','{source}');commit;end;");
+                return "[]";
+            }
+        }
+
+        public string CreateBuilding()
+        {
+            string building_number = HttpContext.Request.Form["building_number"];
+            string building_name = HttpContext.Request.Form["building_name"];
+            string building_address = HttpContext.Request.Form["building_address"];
+            string building_region = HttpContext.Request.Form["building_region"];
+            string building_type = HttpContext.Request.Form["building_type"];
+            string building_bounds = HttpContext.Request.Form["building_bounds"];
+            string building_x = HttpContext.Request.Form["building_x"];
+            string building_y = HttpContext.Request.Form["building_y"];
+            string building_lng = HttpContext.Request.Form["building_lng"];
+            string building_lat = HttpContext.Request.Form["building_lat"];
+            string source = HttpContext.Request.Form["source"];
+            List<string> errors = new List<string>();
+            if (building_number.Length == 0)
+            {
+                errors.Add("楼宇号码不能为空");
+            }
+            if (building_name.Length == 0)
+            {
+                errors.Add("楼宇名称不能为空");
+            }
+            if (building_address.Length == 0)
+            {
+                errors.Add("详细地址不能为空");
+            }
+            if (building_region.Length == 0)
+            {
+                errors.Add("区域不能为空");
+            }
+            if (building_type.Length == 0)
+            {
+                errors.Add("类型不能为空");
+            }
+            if (building_bounds.Length == 0)
+            {
+                errors.Add("楼宇边界不能为空");
+            }
+            if (building_x.Length == 0)
+            {
+                errors.Add("楼宇经度不能为空");
+            }
+            if (building_y.Length == 0)
+            {
+                errors.Add("楼宇纬度不能为空");
+            }
+            if (building_lng.Length == 0)
+            {
+                errors.Add("楼宇经度不能为空");
+            }
+            if (building_lng.Length == 0)
+            {
+                errors.Add("楼宇纬度不能为空");
+            }
+            if (source.Length == 0)
+            {
+                errors.Add("楼宇来源不能为空");
+            }
+            if (errors.Count > 0)
+            {
+                return JsonConvert.SerializeObject(errors);
+            }
+            else
+            {
+                Oraclehp ohp = new Oraclehp();
+                DataSet data = ohp.Query($"begin insert into lbs_building (building_number, building_name, building_address, region, type, bounds, x, y, lng, lat, source) values ('{building_number}','{building_name}','{building_address}','{building_region}','{building_type}', '{building_bounds}','{building_x}','{building_y}','{building_lat}','{building_lng}','{source}');commit;end;");
+                return "[]";
+            }
+        }
 
         public string EditVillageNoBounds(string id)
         {

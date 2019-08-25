@@ -5,7 +5,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="~/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
     <link rel="stylesheet" type="text/css" href="~/easyui/themes/default/easyui.css">
     <link rel="stylesheet" type="text/css" href="~/easyui/themes/icon.css">
     <link rel="stylesheet" type="text/css" href="~/easyui/demo/demo.css">
@@ -71,7 +72,7 @@
 
     <script type="text/javascript" src="~/easyui/jquery.easyui.min.js"></script>
     <script src="https://webapi.amap.com/maps?v=1.4.15&key=3cd18e86c129259575068fdb7f2522e0&plugin=AMap.PolyEditor,AMap.Scale,AMap.ControlBar,Map3D"></script>
-    @*<script language="javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=5a757297a2ef60c6c50aa13e4fb8f311&plugin=Map3D,AMap.Scale,AMap.ControlBar,Amap.PolyEditor"></script>*@
+    @*<script language="javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=5a757297a2ef60c6c50aa13e4fb8f311&plugin=Map3D,AMap.Scale,AMap.ControlBar,Amap.PolyEditor,AMap.MouseTool"></script>*@
     <script src="~/layui-v2.5.4/layui/layui.js" charset="utf-8"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script language="javascript">
@@ -106,6 +107,31 @@
                 top: '10px'
             }
         }));
+    //    var mouseTool = new AMap.MouseTool(map);
+    //        mouseTool.on('draw', function(event) {
+    //  // event.obj 为绘制出来的覆盖物对象
+    //            console.log(event.obj);
+    //})
+        var mousetool;
+        map.plugin(["AMap.MouseTool"], function () {
+            mousetool = new AMap.MouseTool(map);
+            mousetool.on('draw', function (event) {
+                // event.obj 为绘制出来的覆盖物对象
+                var polygon = event.obj;
+                var bounds = polygon.getPath();
+                var list = [];
+                bounds.forEach(function (coord) {
+                    var lng = coord["lng"];
+                    var lat = coord["lat"];
+                    list.push([lng,lat]);
+                    
+                })
+                document.getElementsByTagName("body")[0].setAttribute("data-currentvillage", JSON.stringify(list));
+
+
+
+            });
+        });
 
               (function ($) {
                 function pagerFilter(data) {
@@ -215,14 +241,20 @@
 
         function createTables(d, d2) {
             var htmlTable1 = '<table id="dg" style="width:70%;height:300px" data-options="fitColumns:true,rownumbers:false,singleSelect:true,autoRowHeight:false,pagination:true,pageSize:10"><thead><tr><th field="village_name" width="80" align="center">小区名称</th><th field="village_address" width="100" align="center">地址</th><th field="village_region" width="80" align="center">区域</th><th field="village_type" width="80" align="center">类型</th><th field="village_action" width="80" align="center">操作</th><th field="village_id" align="center" hidden="true">village_id</th><th field="village_lng" align="center" hidden="true">经度</th><th field="village_lat" align="center" hidden="true">纬度</th></tr></thead></table>';
-            var htmlTB1 = '<div id="tb" class="flex sb aic" style="padding: 10px;"><span class="bb-lightblue pb-5px">小区信息</span><div class="flex aic"><input type="text" placeholder="输入小区名称检索" class="mr-10 pd-5px bd2-lightblue" /><i id="inputSearchIcon" class="fa fa-search cr-lightblue"></i><div class="mr-10"><i class="fa fa-file-o cr-lightblue"></i><span> 新建小区</span></div><div><i class="fa fa-download cr-lightblue"></i><span> 更新本地数据</span></div></div></div>';
+            var htmlTB1 = '<div id="tb" class="flex sb aic" style="padding: 10px;"><span class="bb-lightblue pb-5px">小区信息</span><div class="flex aic"><input type="text" placeholder="输入小区名称检索" class="mr-10 pd-5px bd2-lightblue" /><i id="inputSearchIcon" class="fa fa-search cr-lightblue"></i><div class="mr-10"><i class="fa fa-file-o cr-lightblue" onclick="newVillage(this)"></i><span> 新建小区</span></div><div><i class="fa fa-download cr-lightblue"></i><span> 更新本地数据</span></div></div></div>';
             var htmlTable2 = '<table id="dg2" style="width:30%;height:300px" data-options="fitColumns:true,rownumbers:false,singleSelect:true,autoRowHeight:false,pagination:true,pageSize:10"><thead><tr><th field="building_name" width="80" align="center">楼宇号</th><th field="building_address" width="100" align="center">详细地址（蓝牌地址码)</th><th field="building_action" width="80" align="center">操作</th></tr></thead></table>';
-            var htmlTB2 = '<div id="tb2" class="flex sb aic" style="padding: 10px;"><span class="bb-lightblue pb-5px">楼宇信息</span><div class="flex aic"><input type="text" placeholder="输入楼宇号检索" class="mr-10 pd-5px bd2-lightblue" /><i id="inputSearchIcon" class="fa fa-search cr-lightblue"></i><div class="mr-10"><i class="fa fa-file-o cr-lightblue"></i><span> 新建楼宇</span></div><div><i class="fa fa-download cr-lightblue"></i><span> 更新本地数据</span></div></div></div>';
+            var htmlTB2 = '<div id="tb2" class="flex sb aic" style="padding: 10px;"><span class="bb-lightblue pb-5px">楼宇信息</span><div class="flex aic"><input type="text" placeholder="输入楼宇号检索" class="mr-10 pd-5px bd2-lightblue" /><i id="inputSearchIcon" class="fa fa-search cr-lightblue"></i><div class="mr-10"><i class="fa fa-file-o cr-lightblue" onclick="newBuilding(this)"></i><span> 新建楼宇</span></div><div><i class="fa fa-download cr-lightblue"></i><span> 更新本地数据</span></div></div></div>';
             document.getElementById("footer").innerHTML += htmlTable1 + htmlTB1 + htmlTable2 + htmlTB2;
             // { data: getData(d) }
             $(function () {
                 $('#dg').datagrid({ toolbar: "#tb" }).datagrid('loadData',getData(d)).datagrid({
                     onClickRow: function (index, row) {
+                        
+                         for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
+                document.getElementsByClassName("modalSmall")[i].remove();
+                        }
+                        console.log('clicked first');
+                        mousetool.close(true);
                         document.getElementsByTagName("body")[0].setAttribute("data-currentIndex", index);
                         var overlays = map.getAllOverlays("polygon");
                         overlays.forEach(function (overlay) {
@@ -285,36 +317,51 @@
                 }).datagrid('clientPaging').datagrid('highlightRow', 0);
                 $('#dg2').datagrid({ toolbar: "#tb2" }).datagrid('loadData',getData(d2)).datagrid({
                     onClickRow: function (index, row) {
+                         for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
+                document.getElementsByClassName("modalSmall")[i].remove();
+                        }
+                        mousetool.close(true);
+
                         console.log('clicked');
                         document.getElementsByTagName("body")[0].setAttribute("data-currentIndex", index);
                         var markers = map.getAllOverlays("marker");
                         markers.forEach(function (marker) {
-                            marker.setOptions({
-                                fillColor:'rgba(0,0,255,1)'
-                            });
-                            //marker.setIcon('https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png');
+                            //marker.setOptions({
+                            //    fillColor:'rgba(0,0,255,1)'
+                            //});
+
+                               var icon = new AMap.Icon({
+                    size: new AMap.Size(15, 15),
+                    image: './icons/circle.png', // Icon的图像
+                    imageSize: new AMap.Size(15,15)
+    });
+                            marker.setIcon(icon);
                         });
                         var string = row["building_action"];
                         var demo = document.createElement('div');
                         demo.innerHTML = string;
                         var lng = Number(demo.children[0].getAttribute("data-lng"));
                         var lat = Number(demo.children[0].getAttribute("data-lat"));
-                        var markers2 = map.getAllOverlays("marker");
-                        console.log(markers2);
-                        //markers2.forEach(function (marker) {
-                        //        if (marker.getPosition()["lng"] == lng && marker.getPosition()["lat"] == lat) {
-                        //            marker.setIcon('https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png');
-                        //        }
-                        //    });
-                        markers2.forEach(function (marker) {
-                            console.log(market.getCenter());
-                             if (marker.getCenter()["lng"] == lng && marker.getCenter()["lat"] == lat) {
-                                     marker.setOptions({
-                                fillColor:'rgba(0,255,0,1)'
-                            });
-                                    //marker.setIcon('https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png');
+                        //var markers2 = map.getAllOverlays("circle");
+                        
+                        markers.forEach(function (marker) {
+                            if (marker.getPosition()["lng"] == lng && marker.getPosition()["lat"] == lat) {
+                                   var icon = new AMap.Icon({
+                    size: new AMap.Size(15, 15),
+                    image: './icons/circle1.png', // Icon的图像
+                    imageSize: new AMap.Size(15,15)
+    });
+                                    marker.setIcon(icon);
                                 }
                             });
+                        //markers2.forEach(function (marker) {
+                        //     if (marker.getCenter()["lng"] == lng && marker.getCenter()["lat"] == lat) {
+                        //             marker.setOptions({
+                        //        fillColor:'rgba(0,255,0,1)'
+                        //    });
+                        //            //marker.setIcon('https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png');
+                        //        }
+                        //    });
                         map.setCenter([lng, lat]);
                         map.setZoom(18);
                     }
@@ -323,11 +370,241 @@
             switchRegion();
         }
 
-        function getPoiDetail(e) {
-            for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
+         function drawPolygon () {
+      mousetool.polygon({
+        strokeColor: "#FF33FF", 
+        strokeOpacity: 1,
+        strokeWeight: 6,
+        strokeOpacity: 0.2,
+        fillColor: '#1791fc',
+        fillOpacity: 0.4,
+        // 线样式还支持 'dashed'
+        strokeStyle: "solid",
+        // strokeStyle是dashed时有效
+        // strokeDasharray: [30,10],
+      })
+
+        }
+
+        function addVillage(e) {
+              var errors = document.getElementsByClassName("clRedError");
+            for (var i = 0; i < errors.length; i++) {
+                errors[i].remove();
+            }
+            var inputs = e.getElementsByTagName('input');
+            var village_name = inputs[0].value;
+            var village_address = inputs[1].value;
+            var village_region = inputs[2].value;
+            var village_type = inputs[3].value;
+            var village_bounds = document.getElementsByTagName("body")[0].getAttribute("data-currentvillage");
+            var village_x = String(JSON.parse(document.getElementsByTagName("body")[0].getAttribute("data-currentvillage"))[0][0]);
+            var village_y = String(JSON.parse(document.getElementsByTagName("body")[0].getAttribute("data-currentvillage"))[0][1]);
+            var village_lng = String(JSON.parse(document.getElementsByTagName("body")[0].getAttribute("data-currentvillage"))[0][0]);
+            var village_lat = String(JSON.parse(document.getElementsByTagName("body")[0].getAttribute("data-currentvillage"))[0][1]);
+            var source = String(2);
+            $.ajax({
+                type: "post",
+                url: `./API/CreateVillage`,
+                data: { "village_name": village_name, "village_address": village_address, "village_region": village_region, "village_type": village_type, "village_bounds" : village_bounds, "village_x": village_x, "village_y": village_y, "village_lng": village_lng, "village_lat":village_lat, "source":source },
+                dataType: "json",
+                success: function (data) {
+                    if (data.length !== 0) {
+                        var div = document.createElement('div');
+                        div.classList.add("clRedError");
+                        data.forEach(function (error) {
+                            div.innerHTML += `<p class="mb-5">${error}</p>`;
+                        })
+                        e.appendChild(div);
+                    } else {
+                        document.getElementsByClassName("modalSmall")[0].remove();
+                        mousetool.close(true);
+                        layer.msg("小区已添加");
+                        //$('#dg').datagrid('insertRow', {
+                        //    index: 0,
+                        //    row: {
+                        //        village_name: village_name,
+                        //        village_address: village_address,
+                        //        village_region: village_region,
+                        //        village_type: village_type
+                        //    }
+                        //});
+
+   
+                    }
+                },
+                error: function (item, err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function newVillage(e) {
+            // render a form and mousetool
+        
+              for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
                 document.getElementsByClassName("modalSmall")[i].remove();
             }
-            var dataGuid = e.getAttribute("data-guid");
+            mousetool.close(true);
+            drawPolygon();
+              var container = document.createElement('div');
+                        container.setAttribute("class", "modalSmall");
+                        container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">新建小区</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();addVillage(this);">
+       <div class="layui-form-item">
+        <label class="layui-form-label">小区名称</label>
+        <div class="layui-input-inline">
+          <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">详细地址</label>
+        <div class="layui-input-inline">
+          <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">区域</label>
+        <div class="layui-input-inline">
+          <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-inline">
+          <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+        </div>
+      </div>
+   
+
+<div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
+        </div>
+      </div>
+      </div>
+
+</form>`;
+                        //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
+                        document.getElementsByTagName("body")[0].appendChild(container);
+                        form.render();
+
+              
+        }
+
+
+        
+        function addBuilding(e) {
+              var errors = document.getElementsByClassName("clRedError");
+            for (var i = 0; i < errors.length; i++) {
+                errors[i].remove();
+            }
+            var inputs = e.getElementsByTagName('input');
+            var building_number = inputs[0].value;
+            var building_name = inputs[1].value;
+            var building_address = inputs[2].value;
+            var building_region = inputs[3].value;
+            var building_type = inputs[4].value;
+            var building_bounds = document.getElementsByTagName("body")[0].getAttribute("data-currentvillage");
+            var building_x = String(JSON.parse(document.getElementsByTagName("body")[0].getAttribute("data-currentvillage"))[0][0]);
+            var building_y = String(JSON.parse(document.getElementsByTagName("body")[0].getAttribute("data-currentvillage"))[0][1]);
+            var building_lng = String(JSON.parse(document.getElementsByTagName("body")[0].getAttribute("data-currentvillage"))[0][0]);
+            var building_lat = String(JSON.parse(document.getElementsByTagName("body")[0].getAttribute("data-currentvillage"))[0][1]);
+            var source = String(2);
+            $.ajax({
+                type: "post",
+                url: `./API/CreateBuilding`,
+                data: { "building_number": building_number, "building_name": building_name, "building_address": building_address, "building_region": building_region, "building_type": building_type, "building_bounds" : building_bounds, "building_x": building_x, "building_y": building_y, "building_lng": building_lng, "building_lat":building_lat, "source":source },
+                dataType: "json",
+                success: function (data) {
+                    if (data.length !== 0) {
+                        var div = document.createElement('div');
+                        div.classList.add("clRedError");
+                        data.forEach(function (error) {
+                            div.innerHTML += `<p class="mb-5">${error}</p>`;
+                        })
+                        e.appendChild(div);
+                    } else {
+                        document.getElementsByClassName("modalSmall")[0].remove();
+                        mousetool.close(true);
+                        layer.msg("楼宇已添加");
+                        //$('#dg').datagrid('insertRow', {
+                        //    index: 0,
+                        //    row: {
+                        //        village_name: village_name,
+                        //        village_address: village_address,
+                        //        village_region: village_region,
+                        //        village_type: village_type
+                        //    }
+                        //});
+
+   
+                    }
+                },
+                error: function (item, err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function newBuilding(e) {
+            // render a form and mousetool
+            
+              for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
+                document.getElementsByClassName("modalSmall")[i].remove();
+            }
+            mousetool.close(true);
+            drawPolygon();
+              var container = document.createElement('div');
+                        container.setAttribute("class", "modalSmall");
+                        container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">新建楼宇</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();addBuilding(this);">
+       <div class="layui-form-item">
+        <label class="layui-form-label">楼宇号码</label>
+        <div class="layui-input-inline">
+          <input type="text" name="building_number" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+        </div>
+      </div>
+  <div class="layui-form-item">
+        <label class="layui-form-label">楼宇名称</label>
+        <div class="layui-input-inline">
+          <input type="text" name="building_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">详细地址</label>
+        <div class="layui-input-inline">
+          <input type="text" name="building_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">区域</label>
+        <div class="layui-input-inline">
+          <input type="text" name="building_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-inline">
+          <input type="text" name="building_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+        </div>
+      </div>
+   
+
+<div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
+        </div>
+      </div>
+      </div>
+
+</form>`;
+                        //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
+                        document.getElementsByTagName("body")[0].appendChild(container);
+                        form.render();
+
+              
+        }
+
+        function getPoiDetail(e) {
+            setTimeout(function(){   var dataGuid = e.getAttribute("data-guid");
             $.ajax({
                 type: "get",
                 url: `./API/DetailsVillage?id=${dataGuid}`,
@@ -343,13 +620,13 @@
                 error: function (item, err) {
                     console.log(err);
                 }
-            });
+            }); }, 5000);
+          
+          
         }
 
-                function getPoiDetail2(e) {
-            for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
-                document.getElementsByClassName("modalSmall")[i].remove();
-            }
+        function getPoiDetail2(e) {
+                    setTimeout(function(){       console.log('clicked second');
             var dataGuid = e.getAttribute("data-guid");
             $.ajax({
                 type: "get",
@@ -366,7 +643,8 @@
                 error: function (item, err) {
                     console.log(err);
                 }
-            });
+            }); }, 5000);
+      
         }
 
         function editPoiNoBounds(e) {
@@ -518,10 +796,7 @@
         }
 
         function editPoi(e) {
-            for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
-                document.getElementsByClassName("modalSmall")[i].remove();
-            }
-            var dataGuid = e.getAttribute("data-guid");
+            setTimeout(function(){ var dataGuid = e.getAttribute("data-guid");
             $.ajax({
                 type: "get",
                 url: `./API/DetailsVillage?id=${dataGuid}`,
@@ -594,6 +869,7 @@
                         //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
                         document.getElementsByTagName("body")[0].appendChild(container);
                         form.render();
+                         console.log('clicked second');
                     } else {
                         //var polygon;
                         //var overlays = map.getAllOverlays("polygon");
@@ -656,6 +932,7 @@
                         //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
                         document.getElementsByTagName("body")[0].appendChild(container);
                         form.render();
+                         console.log('clicked second');
                         //form.on('switch(switch1)', function (data) {
                         //    console.log(polygon);
                         //    if (data.elem.checked) {
@@ -671,15 +948,13 @@
 
                     console.log(err);
                 }
-            });
+            }); }, 5000);
+            
 
         }
 
-         function editPoi2(e) {
-            for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
-                document.getElementsByClassName("modalSmall")[i].remove();
-            }
-            var dataGuid = e.getAttribute("data-guid");
+        function editPoi2(e) {
+             setTimeout(function(){             var dataGuid = e.getAttribute("data-guid");
             $.ajax({
                 type: "get",
                 url: `./API/DetailsBuilding?id=${dataGuid}`,
@@ -730,7 +1005,8 @@
 
                     console.log(err);
                 }
-            });
+            }); }, 5000);
+
         }
 
                 function deletePoiFinal(e) {
@@ -789,29 +1065,29 @@
         //    }
         //}
         function deletePoi(e) {
-            for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
-                document.getElementsByClassName("modalSmall")[i].remove();
-            }
-            var dataGuid = e.getAttribute("data-guid");
-            var container = document.createElement('div');
-            container.setAttribute("class", "modalSmall");
-            container.classList.add("modalCentered");
-            container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">删除小区</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div>
+            setTimeout(function () {
+                var dataGuid = e.getAttribute("data-guid");
+                var container = document.createElement('div');
+                container.setAttribute("class", "modalSmall");
+                container.classList.add("modalCentered");
+                container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">删除小区</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div>
                 <div class="mb-15 tc">确定删除小区?</div><div class="tr"><button type="button" class="layui-btn layui-btn-danger" data-guid=${dataGuid} onclick="deletePoiFinal(this);">删除</button></div></div>`;
-            document.getElementsByTagName("body")[0].appendChild(container);
+                document.getElementsByTagName("body")[0].appendChild(container);
+                console.log('clicked second');
+            }, 5000);
+            
         }
+               
 
-           function deletePoi2(e) {
-            for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
-                document.getElementsByClassName("modalSmall")[i].remove();
-            }
-            var dataGuid = e.getAttribute("data-guid");
+        function deletePoi2(e) {
+               setTimeout(function(){   var dataGuid = e.getAttribute("data-guid");
             var container = document.createElement('div');
             container.setAttribute("class", "modalSmall");
             container.classList.add("modalCentered");
             container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">删除楼宇</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div>
                 <div class="mb-15 tc">确定删除楼宇?</div><div class="tr"><button type="button" class="layui-btn layui-btn-danger" data-guid=${dataGuid} onclick="deletePoiFinal2(this);">删除</button></div></div>`;
-            document.getElementsByTagName("body")[0].appendChild(container);
+            document.getElementsByTagName("body")[0].appendChild(container); }, 5000);
+          
         }
 
         function openPois(e) {
@@ -851,6 +1127,7 @@
 
         function closeModal(e) {
             e.parentElement.parentElement.remove();
+            mousetool.close(true);
             //$.ajax({
             //    type: "get",
             //    url: `./API/DetailsVillage?id=${dataGuid}`,
@@ -910,30 +1187,38 @@
                 container.innerHTML += `<span class="bb-lightblue pb-5px mr-20">是否显示小区边界</span><button type="button" class="layui-btn layui-btn-radius layui-btn-normal layui-btn-sm" onclick="openPois(this);" disabled>是 <i class="fa fa-check"></i></button><button type="button" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-sm" onclick="closePois(this);">否</button>`;
                 document.getElementsByTagName("body")[0].appendChild(container);
 
-                //l.forEach(function (L) {
-                //    var marker = new AMap.Marker({
-                //    position: new AMap.LngLat(L["LNG"], L["LAT"]),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-                //    title: ''
-                //    });
-                //    map.add(marker);
-                //});
-
                 l.forEach(function (L) {
-                    var circleMarker = new AMap.CircleMarker({
-                        center: new AMap.LngLat(L["LNG"], L["LAT"]),
-                        radius: 3,//3D视图下，CircleMarker半径不要超过64px
-                        strokeColor: 'white',
-                        strokeWeight: 2,
-                        strokeOpacity: 0.5,
-                        fillColor: 'rgba(0,0,255,1)',
-                        fillOpacity: 0.5,
-                        zIndex: 10,
-                        bubble: true,
-                        cursor: 'pointer',
-                        clickable: true
+                    var icon = new AMap.Icon({
+                        size: new AMap.Size(15, 15),
+                        image: './icons/circle.png',  // Icon的图像
+                        imageSize: new AMap.Size(15, 15)
+    });
+                    var marker = new AMap.Marker({
+                    position: new AMap.LngLat(L["LNG"], L["LAT"]),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+                        title: '',
+                        icon: icon // 添加 Icon 图标 URL
                     });
-                    circleMarker.setMap(map);
+                    map.add(marker);
+
+
                 });
+
+                //l.forEach(function (L) {
+                //    var circle = new AMap.Circle({
+                //        center: new AMap.LngLat(L["LNG"], L["LAT"]),
+                //        radius: 3,//3D视图下，CircleMarker半径不要超过64px
+                //        strokeColor: 'white',
+                //        strokeWeight: 2,
+                //        strokeOpacity: 0.5,
+                //        fillColor: 'rgba(0,0,255,1)',
+                //        fillOpacity: 0.5,
+                //        zIndex: 10,
+                //        bubble: true,
+                //        cursor: 'pointer',
+                //        clickable: true
+                //    });
+                //    circle.setMap(map);
+                //});
                 lFirst.forEach(function (L) {
                     rowsL.push({ building_name: L["BUILDING_NAME"], building_address: L["BUILDING_ADDRESS"], building_action: `<i class=\"fa fa-eye mr-5 \" data-lng="${L["LNG"]}" data-lat="${L["LAT"]}" data-bounds="${L["BOUNDS"]}" data-guid="${L["BUILDING_ID"]}" onclick="getPoiDetail2(this);"></i><i class=\"fa fa-edit mr-5 \" data-guid="${L["BUILDING_ID"]}" onclick="editPoi2(this);"></i><i class=\"fa fa-trash-o \" data-guid="${L["BUILDING_ID"]}" onclick="deletePoi2(this);"></i>` });
                 });
@@ -953,6 +1238,7 @@
                selectRegion.addEventListener('change', function (e) {
                 var valueSelected = e.target.value;
                    map.clearMap();
+                   map.setZoom(18);
                    if (valueSelected === "all") {
                        map.setCenter([118.886856,42.257817]);
                    }
@@ -1032,29 +1318,35 @@
 
                 });
 
-                l.forEach(function (L) {
-                    var circleMarker = new AMap.CircleMarker({
-                        center: new AMap.LngLat(L["LNG"], L["LAT"]),
-                        radius: 3,//3D视图下，CircleMarker半径不要超过64px
-                        strokeColor: 'white',
-                        strokeWeight: 2,
-                        strokeOpacity: 0.5,
-                        fillColor: 'rgba(0,0,255,1)',
-                        fillOpacity: 0.5,
-                        zIndex: 10,
-                        bubble: true,
-                        cursor: 'pointer',
-                        clickable: true
+                //l.forEach(function (L) {
+                //    var circle = new AMap.Circle({
+                //        center: new AMap.LngLat(L["LNG"], L["LAT"]),
+                //        radius: 3,//3D视图下，CircleMarker半径不要超过64px
+                //        strokeColor: 'white',
+                //        strokeWeight: 2,
+                //        strokeOpacity: 0.5,
+                //        fillColor: 'rgba(0,0,255,1)',
+                //        fillOpacity: 0.5,
+                //        zIndex: 10,
+                //        bubble: true,
+                //        cursor: 'pointer',
+                //        clickable: true
+                //    });
+                //    circle.setMap(map);
+                //});
+                              l.forEach(function (L) {
+                                  var icon = new AMap.Icon({
+                    size: new AMap.Size(15, 15),
+                    image: './icons/circle.png', // Icon的图像
+                    imageSize: new AMap.Size(15,15)
+    });
+                    var marker = new AMap.Marker({
+                    position: new AMap.LngLat(L["LNG"], L["LAT"]),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+                    title: '',
+                    icon: icon, // 添加 Icon 图标 URL
                     });
-                    circleMarker.setMap(map);
-                });
-
-                    //var marker = new AMap.Marker({
-                    //position: new AMap.LngLat(L["LNG"], L["LAT"]),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-                    //title: ''
-                    //});
-                    //map.add(marker);
-         
+                    map.add(marker);
+                      });
                 lFirst.forEach(function (L) {
                     rowsL.push({ building_name: L["BUILDING_NAME"], building_address: L["BUILDING_ADDRESS"], building_action: `<i class=\"fa fa-eye mr-5 \" data-lng="${L["LNG"]}" data-lat="${L["LAT"]}" data-bounds="${L["BOUNDS"]}" data-guid="${L["BUILDING_ID"]}" onclick="getPoiDetail2(this);"></i><i class=\"fa fa-edit mr-5 \" data-guid="${L["BUILDING_ID"]}" onclick="editPoi2(this);"></i><i class=\"fa fa-trash-o \" data-guid="${L["BUILDING_ID"]}" onclick="deletePoi2(this);"></i>` });
                 });

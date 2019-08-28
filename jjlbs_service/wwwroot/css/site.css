@@ -149,3 +149,46 @@
 i.fa{
     cursor: pointer;
 }
+
+.selectedButton {
+    background-color: lightgray!important;
+}
+
+.tabsMain {
+    border: 1px solid #C9C9C9;
+    border-radius: 100px;
+}
+
+.tabBorderLeft {
+    border-radius: 100px 0 0 100px;
+}
+
+.tabBorderRight {
+    border-radius: 0 100px 100px 0;
+}
+
+.m0{
+    margin:0!important;
+}
+
+.bd0 {
+    border: none;
+}
+
+.hidden {
+    display: none!important;
+}
+
+#logo {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.selectPCC {
+    padding: 10px;
+    border: none;
+}
+
+select::-ms-expand {
+    display: none;
+}

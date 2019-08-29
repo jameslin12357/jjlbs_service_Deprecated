@@ -252,10 +252,164 @@
 
         }
 
+        function getBuildingNumber(str){
+    var r = str.match(/[a-zA-Z]/);
+    if (r !== null) {
+        return str.slice(r["index"]);
+    } else {
+        var r2 = str.match(/\d/);
+        if (r2 !== null) {
+            return str.slice(r2["index"]);
+        } else {
+            return str;
+        }
+    }
+}
+
+                function getBuilding(e) {
+            var selectP = document.getElementById('selectProvince');
+            var selectC = document.getElementById('selectCity');
+            var selectCT = document.getElementById('selectCounty');
+            var province = $("#selectProvince").find("option:selected").text();
+            var city = $("#selectCity").find("option:selected").text();
+            var county = $("#selectCounty").find("option:selected").text();
+            var adcode = document.getElementById('selectCounty').value;
+            var region = province + "/" + city + "/" + county;
+            if (province !== "所有" && city !== "所有" && county !== "所有") {
+                $.ajax({
+                    type: "get",
+                    url: `./api/regionexists2?region=${region}`,
+                    dataType: "json",
+                    success: function (data) {
+                        if (data["ds"][0]["COUNT"] === 0) {
+                            $.ajax({
+                                type: "get",
+                                url: `https://restapi.amap.com/v3/place/text?key=c7aeb11746b35a92b7b6eee3178a05e4&keywords=&types=190403&city=${adcode}&children=1&offset=5&page=1&extensions=all`,
+                                dataType: "json",
+                                success: function (data) {
+                                    var count = data["count"];
+                                    var times = 0;
+                                    if (count !== 0) {
+                                        times = Math.ceil(count / 20);
+                                        console.log(count);
+                                        for (var i = 0; i < times; i++) {
+                                            var page = i + 1;
+                                            console.log('this is page' + page);
+                                            $.ajax({
+                                                type: "get",
+                                                url: `https://restapi.amap.com/v3/place/text?key=c7aeb11746b35a92b7b6eee3178a05e4&keywords=&types=190403&city=${adcode}&children=1&offset=20&page=${page}&extensions=all`,
+                                                dataType: "json",
+                                                success: function (data2) {
+                                                    console.log(data2);
+                                                    data2["pois"].forEach(function (poi) {
+                                                        var region = `${poi["pname"]}/${poi["cityname"]}/${poi["adname"]}`;
+                                                        var lnglat = poi["location"];
+                                                        var lng = Number(lnglat.split(',')[0]);
+                                                        var lat = Number(lnglat.split(',')[1]);
+                                                        var building_number = getBuildingNumber(poi["name"]);
+                                                                                           $.ajax({
+                                                            type: "post",
+                                                            url: `./API/CreateBuildings`,
+                                                            data: { "building_code":poi["id"],"building_number": building_number, "building_name": poi["name"], "building_address": poi["address"], "building_region": region, "building_type": poi["type"], "building_x":lng,"building_y":lat,"building_lng":lng,"building_lat":lat,"village_id":poi["parent"],"source": "1" },
+                                                            dataType: "json",
+                                                            success: function (data) {
+                                                                if (data.length !== 0) {
+                                                                    console.log('error');
+                                                                } else {
+                                                                    //document.getElementsByClassName("modalSmall")[0].remove();
+                                                                    console.log('inserted');
+                                                                    //$('#dg').datagrid('insertRow', {
+                                                                    //    index: 0,
+                                                                    //    row: {
+                                                                    //        village_name: village_name,
+                                                                    //        village_address: village_address,
+                                                                    //        village_region: village_region,
+                                                                    //        village_type: village_type
+                                                                    //    }
+                                                                    //});
+
+
+                                                                }
+                                                            },
+                                                            error: function (item, err) {
+                                                                console.log(err);
+                                                            }
+                                                        });
+                                                        //var parent = poi["parent"];
+                                                        //var village_id = "";
+                                            //                            $.ajax({
+                                            //    type: "get",
+                                            //    url: `./api/getBuildingVillageId?code=${parent}`,
+                                            //    dataType: "json",
+                                            //    success: function (data3) {
+                                            //        if (data3 !== "404") {
+                                            //            if (data3["ds"] !== undefined) {
+                                            //                if (data3["ds"].length !== 0) {
+                                            //                    village_id = data3["ds"][0];
+                                            //                }
+                                            //            }
+                                                        
+                                            //        }
+
+                                            //        console.log(data3);
+                                            //        $.ajax({
+                                            //                type: "post",
+                                            //                url: `./API/CreateBuildings`,
+                                            //                data: { "building_code":poi["id"],"building_number": building_number, "building_name": poi["name"], "building_address": poi["address"], "building_region": region, "building_type": poi["type"], "building_x":lng,"building_y":lat,"building_lng":lng,"building_lat":lat,"village_id":village_id,"source": "1" },
+                                            //                dataType: "json",
+                                            //                success: function (data) {
+                                            //                    if (data.length !== 0) {
+                                            //                        console.log('error');
+                                            //                    } else {
+                                            //                        //document.getElementsByClassName("modalSmall")[0].remove();
+                                            //                        console.log('inserted');
+                                            //                        //$('#dg').datagrid('insertRow', {
+                                            //                        //    index: 0,
+                                            //                        //    row: {
+                                            //                        //        village_name: village_name,
+                                            //                        //        village_address: village_address,
+                                            //                        //        village_region: village_region,
+                                            //                        //        village_type: village_type
+                                            //                        //    }
+                                            //                        //});
+
+
+                                            //                    }
+                                            //                },
+                                            //                error: function (item, err) {
+                                            //                    console.log(err);
+                                            //                }
+                                            //            });
+                                            //    },
+                                            //    error: function () {
+                                            //        console.log('error');
+                                            //    }
+                                            //});
+
+                                                        
+                                                    });
+                                                },
+                                                error: function () {
+                                                    console.log('error');
+                                                }
+                                            });
+                                        }
+                                        layer.msg("楼宇已更新");
+                                    }
+                                },
+                                error: function () {
+                                    console.log('error');
+                                }
+                            });
+                        }
+                    },
+                    error: function () {
+                        console.log('error');
+                    }
+                });
+            }
+        }
         function getVillage(e) {
-
-
-
             var selectP = document.getElementById('selectProvince');
             var selectC = document.getElementById('selectCity');
             var selectCT = document.getElementById('selectCounty');
@@ -289,18 +443,109 @@
                                                 url: `https://restapi.amap.com/v3/place/text?key=c7aeb11746b35a92b7b6eee3178a05e4&keywords=&types=120302&city=${adcode}&children=1&offset=20&page=${page}&extensions=all`,
                                                 dataType: "json",
                                                 success: function (data2) {
-                                                    dataF = [];
                                                     data2["pois"].forEach(function (poi) {
                                                         var region = `${poi["pname"]}/${poi["cityname"]}/${poi["adname"]}`;
                                                         var lnglat = poi["location"];
                                                         var lng = Number(lnglat.split(',')[0]);
                                                         var lat = Number(lnglat.split(',')[1]);
+                                                        $.ajax({
+                                                            type: "post",
+                                                            url: `./API/CreateVillages`,
+                                                            data: { "village_code": poi["id"], "village_name": poi["name"], "village_address": poi["address"], "village_region": region, "village_type": poi["type"], "village_x": lng, "village_y": lat, "village_lng": lng, "village_lat": lat, "source": "1" },
+                                                            dataType: "json",
+                                                            success: function (data) {
+                                                                if (data.length !== 0) {
+                                                                    console.log('error');
+                                                                } else {
+                                                                    //document.getElementsByClassName("modalSmall")[0].remove();
+                                                                    console.log('inserted');
+                                                                    //$('#dg').datagrid('insertRow', {
+                                                                    //    index: 0,
+                                                                    //    row: {
+                                                                    //        village_name: village_name,
+                                                                    //        village_address: village_address,
+                                                                    //        village_region: village_region,
+                                                                    //        village_type: village_type
+                                                                    //    }
+                                                                    //});
 
-                                                        dataF.push({ "village_code": poi["id"], "village_name": poi["name"], "village_address": poi["address"], "village_region": region, "village_type": poi["type"], "village_x": lng, "village_y": lat, "village_lng": lng, "village_lat": lat });
 
-
+                                                                }
+                                                            },
+                                                            error: function (item, err) {
+                                                                console.log(err);
+                                                            }
+                                                        });
                                                     });
-                                                    console.log(dataF);
+                                                },
+                                                error: function () {
+                                                    console.log('error');
+                                                }
+                                            });
+                                        }
+                                        layer.msg("小区已更新");
+                                    }
+                                },
+                                error: function () {
+                                    console.log('error');
+                                }
+                            });
+                        }
+                    },
+                    error: function () {
+                        console.log('error');
+                    }
+                });
+            }
+        }
+
+
+
+           //dataF.push({ "village_code": poi["id"], "village_name": poi["name"], "village_address": poi["address"], "village_region": region, "village_type": poi["type"], "village_x": lng, "village_y": lat, "village_lng": lng, "village_lat": lat });
+
+
+                                            
+                                                    //dataF = [];
+                                                    //data2["pois"].forEach(function (poi) {
+                                                    //    var region = `${poi["pname"]}/${poi["cityname"]}/${poi["adname"]}`;
+                                                    //    var lnglat = poi["location"];
+                                                    //    var lng = Number(lnglat.split(',')[0]);
+                                                    //    var lat = Number(lnglat.split(',')[1]);
+
+                                                    //    dataF.push({ "village_code": poi["id"], "village_name": poi["name"], "village_address": poi["address"], "village_region": region, "village_type": poi["type"], "village_x": lng, "village_y": lat, "village_lng": lng, "village_lat": lat });
+
+
+                                                    //});
+                                                    //console.log(JSON.stringify(dataF));
+            //                                             $.ajax({
+            //    type: "post",
+            //    url: `./API/CreateVillages`,
+            //    data: { "list": JSON.stringify(dataF) },
+            //    dataType: "json",
+            //    success: function (data) {
+            //        if (data.length !== 0) {
+                        
+            //        } else {
+            //            //document.getElementsByClassName("modalSmall")[0].remove();
+            //            //layer.msg("小区已添加");
+            //            //$('#dg').datagrid('insertRow', {
+            //            //    index: 0,
+            //            //    row: {
+            //            //        village_name: village_name,
+            //            //        village_address: village_address,
+            //            //        village_region: village_region,
+            //            //        village_type: village_type
+            //            //    }
+            //            //});
+
+
+            //        }
+            //    },
+            //    error: function (item, err) {
+            //        console.log(err);
+            //    }
+            //});
+                                                    //console.log(dataF);
                                                     // after getting twenty POIs and placing their info inside a list, loop over each
                                                     // and use its poiId to get corresponding bounds which can be either bounds or null
 
@@ -363,170 +608,144 @@
                                                     //var village_lng = ;
                                                     //var village_lat = ;
                                                     //var village_bounds = ;
+  
+        //function createTables(d, d2) {
+        //    var htmlTable1 = '<table id="dg" style="width:70%;height:300px" data-options="fitColumns:true,rownumbers:false,singleSelect:true,autoRowHeight:false,pagination:true,pageSize:10"><thead><tr><th field="village_name" width="80" align="center">小区名称</th><th field="village_address" width="100" align="center">地址</th><th field="village_region" width="80" align="center">区域</th><th field="village_type" width="80" align="center">类型</th><th field="village_action" width="80" align="center">操作</th><th field="village_id" align="center" hidden="true">village_id</th><th field="village_lng" align="center" hidden="true">经度</th><th field="village_lat" align="center" hidden="true">纬度</th></tr></thead></table>';
+        //    var htmlTB1 = '<div id="tb" class="flex sb aic" style="padding: 10px;"><span class="bb-lightblue pb-5px">小区信息</span><div class="flex aic"><input type="text" placeholder="输入小区名称检索" class="mr-10 pd-5px bd2-lightblue" /><i id="inputSearchIcon" class="fa fa-search cr-lightblue" onclick="searchVillage(this)"></i><div class="mr-10"><i class="fa fa-file-o cr-lightblue" onclick="newVillage(this)"></i><span> 新建小区</span></div><div><i class="fa fa-download cr-lightblue" onclick="getVillage(this)"></i><span> 更新本地数据</span></div></div></div>';
+        //    var htmlTable2 = '<table id="dg2" style="width:30%;height:300px" data-options="fitColumns:true,rownumbers:false,singleSelect:true,autoRowHeight:false,pagination:true,pageSize:10"><thead><tr><th field="building_name" width="80" align="center">楼宇号</th><th field="building_address" width="100" align="center">详细地址（蓝牌地址码)</th><th field="building_action" width="80" align="center">操作</th></tr></thead></table>';
+        //    var htmlTB2 = '<div id="tb2" class="flex sb aic" style="padding: 10px;"><span class="bb-lightblue pb-5px">楼宇信息</span><div class="flex aic"><input type="text" placeholder="输入楼宇号检索" class="mr-10 pd-5px bd2-lightblue" /><i id="inputSearchIcon" class="fa fa-search cr-lightblue" onclick="searchBuilding(this)"></i><div class="mr-10"><i class="fa fa-file-o cr-lightblue" onclick="newBuilding(this)"></i><span> 新建楼宇</span></div><div><i class="fa fa-download cr-lightblue" onclick="getBuilding(this)"></i><span> 更新本地数据</span></div></div></div>';
+        //    document.getElementById("footer").innerHTML += htmlTable1 + htmlTB1 + htmlTable2 + htmlTB2;
+        //    // { data: getData(d) }
+        //    $(function () {
+        //        $('#dg').datagrid({ toolbar: "#tb" }).datagrid('loadData', getData(d)).datagrid({
+        //            onClickRow: function (index, row) {
 
-                                                },
-                                                error: function () {
-                                                    console.log('error');
-                                                }
-                                            });
+        //                for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
+        //                    document.getElementsByClassName("modalSmall")[i].remove();
+        //                }
+        //                console.log('clicked first');
+        //                mousetool.close(true);
+        //                document.getElementsByTagName("body")[0].setAttribute("data-currentIndex", index);
+        //                var overlays = map.getAllOverlays("polygon");
+        //                overlays.forEach(function (overlay) {
+        //                    overlay.setOptions({
+        //                        strokeColor: "#2828FF"
+        //                    });
+        //                });
+        //                var string = row["village_action"];
+        //                var demo = document.createElement('div');
+        //                demo.innerHTML = string;
+        //                var lng = Number(demo.children[0].getAttribute("data-lng"));
+        //                var lat = Number(demo.children[0].getAttribute("data-lat"));
+        //                var bounds = demo.children[0].getAttribute("data-bounds");
+        //                var dataGuid = demo.children[0].getAttribute("data-guid");
 
+        //                console.log(lng);
+        //                console.log(lat);
+        //                map.setCenter([lng, lat]);
+        //                map.setZoom(18);
+        //                if (bounds !== "null") {
+        //                    var overlays2 = map.getAllOverlays("polygon");
+        //                    overlays2.forEach(function (overlay) {
+        //                        var bounds2 = "[";
+        //                        overlay.getPath().forEach(function (coord) {
+        //                            var lng = coord["lng"];
+        //                            var lat = coord["lat"];
+        //                            bounds2 += `[${String(lng)},${String(lat)}],`;
+        //                        });
+        //                        bounds2 = bounds2.slice(0, bounds2.length - 1);
+        //                        bounds2 += "]";
+        //                        if (bounds === bounds2) {
+        //                            overlay.setOptions({
+        //                                strokeColor: "#D00000"
+        //                            });
+        //                        }
+        //                    });
+        //                }
+        //                //document.getElementsByClassName('panel')[1].remove();
+        //                $.ajax({
+        //                    type: "get",
+        //                    url: `./API/VillageBuildings?id=${dataGuid}`,
+        //                    contentType: "application/json; charset=utf-8",
+        //                    dataType: "json",
+        //                    success: function (data) {
+        //                        rowsL = [];
+        //                        data["ds"].forEach(function (L) {
+        //                            rowsL.push({ building_name: L["BUILDING_NAME"], building_address: L["BUILDING_ADDRESS"], building_action: `<i class=\"fa fa-eye mr-5 \" data-lng="${L["LNG"]}" data-lat="${L["LAT"]}" data-bounds="${L["BOUNDS"]}" data-guid="${L["BUILDING_ID"]}" onclick="getPoiDetail2(this);"></i><i class=\"fa fa-edit mr-5 \" data-guid="${L["BUILDING_ID"]}" onclick="editPoi2(this);"></i><i class=\"fa fa-trash-o \" data-guid="${L["BUILDING_ID"]}" onclick="deletePoi2(this);"></i>` });
+        //                        });
 
-                                        }
-                                    }
-                                },
-                                error: function () {
-                                    console.log('error');
-                                }
-                            });
-                        }
-                    },
-                    error: function () {
-                        console.log('error');
-                    }
-                });
-            }
-        }
+        //                        $(function () {
+        //                            $('#dg2').datagrid('loadData', getData(rowsL));
+        //                        });
+        //                    },
+        //                    error: function (item, err) {
+        //                        console.log(err);
+        //                    }
+        //                });
+        //                // get related buildings through api and use json to build table to right and attach events also remove old table to right
+        //                // extract record location and guid, relocate map to location, remove buildings table from dom,
+        //                // sned request to api to get related buildings in json string form and use it to build
+        //                // a new table and bind events to it
+        //            }
+        //        }).datagrid('clientPaging').datagrid('highlightRow', 0);
 
+        //        $('#dg2').datagrid({ toolbar: "#tb2" }).datagrid('loadData', getData(d2)).datagrid({
+        //            onClickRow: function (index, row) {
+        //                for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
+        //                    document.getElementsByClassName("modalSmall")[i].remove();
+        //                }
+        //                mousetool.close(true);
 
-        function getBuilding(e) {
-            console.log('w2');
+        //                console.log('clicked');
+        //                document.getElementsByTagName("body")[0].setAttribute("data-currentIndex", index);
+        //                var markers = map.getAllOverlays("marker");
+        //                markers.forEach(function (marker) {
+        //                    //marker.setOptions({
+        //                    //    fillColor:'rgba(0,0,255,1)'
+        //                    //});
 
-        }
+        //                    var icon = new AMap.Icon({
+        //                        size: new AMap.Size(15, 15),
+        //                        image: './icons/circle.png', // Icon的图像
+        //                        imageSize: new AMap.Size(15, 15)
+        //                    });
+        //                    marker.setIcon(icon);
+        //                });
+        //                var string = row["building_action"];
+        //                var demo = document.createElement('div');
+        //                demo.innerHTML = string;
+        //                var lng = Number(demo.children[0].getAttribute("data-lng"));
+        //                var lat = Number(demo.children[0].getAttribute("data-lat"));
+        //                //var markers2 = map.getAllOverlays("circle");
 
-        function createTables(d, d2) {
-            var htmlTable1 = '<table id="dg" style="width:70%;height:300px" data-options="fitColumns:true,rownumbers:false,singleSelect:true,autoRowHeight:false,pagination:true,pageSize:10"><thead><tr><th field="village_name" width="80" align="center">小区名称</th><th field="village_address" width="100" align="center">地址</th><th field="village_region" width="80" align="center">区域</th><th field="village_type" width="80" align="center">类型</th><th field="village_action" width="80" align="center">操作</th><th field="village_id" align="center" hidden="true">village_id</th><th field="village_lng" align="center" hidden="true">经度</th><th field="village_lat" align="center" hidden="true">纬度</th></tr></thead></table>';
-            var htmlTB1 = '<div id="tb" class="flex sb aic" style="padding: 10px;"><span class="bb-lightblue pb-5px">小区信息</span><div class="flex aic"><input type="text" placeholder="输入小区名称检索" class="mr-10 pd-5px bd2-lightblue" /><i id="inputSearchIcon" class="fa fa-search cr-lightblue" onclick="searchVillage(this)"></i><div class="mr-10"><i class="fa fa-file-o cr-lightblue" onclick="newVillage(this)"></i><span> 新建小区</span></div><div><i class="fa fa-download cr-lightblue" onclick="getVillage(this)"></i><span> 更新本地数据</span></div></div></div>';
-            var htmlTable2 = '<table id="dg2" style="width:30%;height:300px" data-options="fitColumns:true,rownumbers:false,singleSelect:true,autoRowHeight:false,pagination:true,pageSize:10"><thead><tr><th field="building_name" width="80" align="center">楼宇号</th><th field="building_address" width="100" align="center">详细地址（蓝牌地址码)</th><th field="building_action" width="80" align="center">操作</th></tr></thead></table>';
-            var htmlTB2 = '<div id="tb2" class="flex sb aic" style="padding: 10px;"><span class="bb-lightblue pb-5px">楼宇信息</span><div class="flex aic"><input type="text" placeholder="输入楼宇号检索" class="mr-10 pd-5px bd2-lightblue" /><i id="inputSearchIcon" class="fa fa-search cr-lightblue" onclick="searchBuilding(this)"></i><div class="mr-10"><i class="fa fa-file-o cr-lightblue" onclick="newBuilding(this)"></i><span> 新建楼宇</span></div><div><i class="fa fa-download cr-lightblue" onclick="getBuilding(this)"></i><span> 更新本地数据</span></div></div></div>';
-            document.getElementById("footer").innerHTML += htmlTable1 + htmlTB1 + htmlTable2 + htmlTB2;
-            // { data: getData(d) }
-            $(function () {
-                $('#dg').datagrid({ toolbar: "#tb" }).datagrid('loadData', getData(d)).datagrid({
-                    onClickRow: function (index, row) {
-
-                        for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
-                            document.getElementsByClassName("modalSmall")[i].remove();
-                        }
-                        console.log('clicked first');
-                        mousetool.close(true);
-                        document.getElementsByTagName("body")[0].setAttribute("data-currentIndex", index);
-                        var overlays = map.getAllOverlays("polygon");
-                        overlays.forEach(function (overlay) {
-                            overlay.setOptions({
-                                strokeColor: "#2828FF"
-                            });
-                        });
-                        var string = row["village_action"];
-                        var demo = document.createElement('div');
-                        demo.innerHTML = string;
-                        var lng = Number(demo.children[0].getAttribute("data-lng"));
-                        var lat = Number(demo.children[0].getAttribute("data-lat"));
-                        var bounds = demo.children[0].getAttribute("data-bounds");
-                        var dataGuid = demo.children[0].getAttribute("data-guid");
-                        map.setCenter([lng, lat]);
-                        map.setZoom(18);
-                        if (bounds !== "null") {
-                            var overlays2 = map.getAllOverlays("polygon");
-                            overlays2.forEach(function (overlay) {
-                                var bounds2 = "[";
-                                overlay.getPath().forEach(function (coord) {
-                                    var lng = coord["lng"];
-                                    var lat = coord["lat"];
-                                    bounds2 += `[${String(lng)},${String(lat)}],`;
-                                });
-                                bounds2 = bounds2.slice(0, bounds2.length - 1);
-                                bounds2 += "]";
-                                if (bounds === bounds2) {
-                                    overlay.setOptions({
-                                        strokeColor: "#D00000"
-                                    });
-                                }
-                            });
-                        }
-                        //document.getElementsByClassName('panel')[1].remove();
-                        $.ajax({
-                            type: "get",
-                            url: `./API/VillageBuildings?id=${dataGuid}`,
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
-                            success: function (data) {
-                                rowsL = [];
-                                data["ds"].forEach(function (L) {
-                                    rowsL.push({ building_name: L["BUILDING_NAME"], building_address: L["BUILDING_ADDRESS"], building_action: `<i class=\"fa fa-eye mr-5 \" data-lng="${L["LNG"]}" data-lat="${L["LAT"]}" data-bounds="${L["BOUNDS"]}" data-guid="${L["BUILDING_ID"]}" onclick="getPoiDetail2(this);"></i><i class=\"fa fa-edit mr-5 \" data-guid="${L["BUILDING_ID"]}" onclick="editPoi2(this);"></i><i class=\"fa fa-trash-o \" data-guid="${L["BUILDING_ID"]}" onclick="deletePoi2(this);"></i>` });
-                                });
-
-                                $(function () {
-                                    $('#dg2').datagrid('loadData', getData(rowsL));
-                                });
-                            },
-                            error: function (item, err) {
-                                console.log(err);
-                            }
-                        });
-                        // get related buildings through api and use json to build table to right and attach events also remove old table to right
-                        // extract record location and guid, relocate map to location, remove buildings table from dom,
-                        // sned request to api to get related buildings in json string form and use it to build
-                        // a new table and bind events to it
-                    }
-                }).datagrid('clientPaging').datagrid('highlightRow', 0);
-
-                $('#dg2').datagrid({ toolbar: "#tb2" }).datagrid('loadData', getData(d2)).datagrid({
-                    onClickRow: function (index, row) {
-                        for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
-                            document.getElementsByClassName("modalSmall")[i].remove();
-                        }
-                        mousetool.close(true);
-
-                        console.log('clicked');
-                        document.getElementsByTagName("body")[0].setAttribute("data-currentIndex", index);
-                        var markers = map.getAllOverlays("marker");
-                        markers.forEach(function (marker) {
-                            //marker.setOptions({
-                            //    fillColor:'rgba(0,0,255,1)'
-                            //});
-
-                            var icon = new AMap.Icon({
-                                size: new AMap.Size(15, 15),
-                                image: './icons/circle.png', // Icon的图像
-                                imageSize: new AMap.Size(15, 15)
-                            });
-                            marker.setIcon(icon);
-                        });
-                        var string = row["building_action"];
-                        var demo = document.createElement('div');
-                        demo.innerHTML = string;
-                        var lng = Number(demo.children[0].getAttribute("data-lng"));
-                        var lat = Number(demo.children[0].getAttribute("data-lat"));
-                        //var markers2 = map.getAllOverlays("circle");
-
-                        markers.forEach(function (marker) {
-                            if (marker.getPosition()["lng"] == lng && marker.getPosition()["lat"] == lat) {
-                                var icon = new AMap.Icon({
-                                    size: new AMap.Size(15, 15),
-                                    image: './icons/circle1.png', // Icon的图像
-                                    imageSize: new AMap.Size(15, 15)
-                                });
-                                marker.setIcon(icon);
-                            }
-                        });
-                        //markers2.forEach(function (marker) {
-                        //     if (marker.getCenter()["lng"] == lng && marker.getCenter()["lat"] == lat) {
-                        //             marker.setOptions({
-                        //        fillColor:'rgba(0,255,0,1)'
-                        //    });
-                        //            //marker.setIcon('https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png');
-                        //        }
-                        //    });
-                        map.setCenter([lng, lat]);
-                        map.setZoom(18);
-                    }
-                }).datagrid('clientPaging').datagrid('highlightRow', 0);
-                $('.datagrid-pager.pagination').pagination({
-                    displayMsg: "显示 {total} 条 中 {from} 到 {to} 条"
-                });
-            });
-            // switchRegion();
-        }
+        //                markers.forEach(function (marker) {
+        //                    if (marker.getPosition()["lng"] == lng && marker.getPosition()["lat"] == lat) {
+        //                        var icon = new AMap.Icon({
+        //                            size: new AMap.Size(15, 15),
+        //                            image: './icons/circle1.png', // Icon的图像
+        //                            imageSize: new AMap.Size(15, 15)
+        //                        });
+        //                        marker.setIcon(icon);
+        //                    }
+        //                });
+        //                //markers2.forEach(function (marker) {
+        //                //     if (marker.getCenter()["lng"] == lng && marker.getCenter()["lat"] == lat) {
+        //                //             marker.setOptions({
+        //                //        fillColor:'rgba(0,255,0,1)'
+        //                //    });
+        //                //            //marker.setIcon('https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png');
+        //                //        }
+        //                //    });
+        //                map.setCenter([lng, lat]);
+        //                map.setZoom(18);
+        //            }
+        //        }).datagrid('clientPaging').datagrid('highlightRow', 0);
+        //        $('.datagrid-pager.pagination').pagination({
+        //            displayMsg: "显示 {total} 条 中 {from} 到 {to} 条"
+        //        });
+        //    });
+        //    // switchRegion();
+        //}
 
         function drawPolygon() {
             mousetool.polygon({
@@ -2199,6 +2418,8 @@
                         var lat = Number(demo.children[0].getAttribute("data-lat"));
                         var bounds = demo.children[0].getAttribute("data-bounds");
                         var dataGuid = demo.children[0].getAttribute("data-guid");
+                        console.log(lng);
+                        console.log(lat);
                         map.setCenter([lng, lat]);
                         map.setZoom(18);
                         if (bounds !== "null") {
@@ -2306,7 +2527,6 @@
 
         createTables();
     </script>
-    <script src="~/js/b.js"></script>
 
 
 

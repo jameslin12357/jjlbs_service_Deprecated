@@ -52,6 +52,20 @@ namespace jjlbs_service.Controllers
 
         }
 
+        public string RegionExists2(string region)
+        {
+            if (region == null)
+            {
+                return "404";
+            }
+            Oraclehp ohp = new Oraclehp();
+            DataSet data = ohp.Query($"select count(*) as count from lbs_building where region = '{region}'");
+
+            string json = JsonConvert.SerializeObject(data);
+            return json;
+
+        }
+
 
         public string Index(string type)
         {
@@ -252,6 +266,63 @@ namespace jjlbs_service.Controllers
             string json = JsonConvert.SerializeObject(data);
             return json;
         }
+
+        public string getBuildingVillageId(string code)
+        {
+            if (code == null)
+            {
+                return "404";
+            }
+            Oraclehp ohp = new Oraclehp();
+            DataSet data = ohp.Query($"select RAWTOHEX(VILLAGE_ID) as VILLAGE_ID from lbs_village t where t.village_code = '{code}'"); 
+            string json = JsonConvert.SerializeObject(data);
+            return json;
+        }
+
+        public string CreateBuildings()
+        {
+            string building_code = HttpContext.Request.Form["building_code"];
+            string building_number = HttpContext.Request.Form["building_number"];
+            string building_name = HttpContext.Request.Form["building_name"];
+            string building_address = HttpContext.Request.Form["building_address"];
+            string building_region = HttpContext.Request.Form["building_region"];
+            string building_type = HttpContext.Request.Form["building_type"];
+            string building_x = HttpContext.Request.Form["building_x"];
+            string building_y = HttpContext.Request.Form["building_y"];
+            string building_lng = HttpContext.Request.Form["building_lng"];
+            string building_lat = HttpContext.Request.Form["building_lat"];
+            string village_id = HttpContext.Request.Form["village_id"];
+            string source = HttpContext.Request.Form["source"];
+            Oraclehp ohp = new Oraclehp();
+            DataSet data = ohp.Query($"begin insert into lbs_building (code, building_number, building_name, building_address, region, type, x, y, lng, lat, village_id, source) values ('{building_code}','{building_number}','{building_name}','{building_address}','{building_region}','{building_type}','{building_x}','{building_y}','{building_lng}','{building_lat}',(select village_id from lbs_village where village_code = '{village_id}' and rownum<2),'{source}');commit;end;");
+            return "[]";
+
+        }
+
+        public string CreateVillages()
+        {
+            string village_code = HttpContext.Request.Form["village_code"];
+            string village_name = HttpContext.Request.Form["village_name"];
+            string village_address = HttpContext.Request.Form["village_address"];
+            string village_region = HttpContext.Request.Form["village_region"];
+            string village_type = HttpContext.Request.Form["village_type"];
+            string village_x = HttpContext.Request.Form["village_x"];
+            string village_y = HttpContext.Request.Form["village_y"];
+            string village_lng = HttpContext.Request.Form["village_lng"];
+            string village_lat = HttpContext.Request.Form["village_lat"];
+            string source = HttpContext.Request.Form["source"];
+            Oraclehp ohp = new Oraclehp();
+            DataSet data = ohp.Query($"begin insert into lbs_village (village_code, village_name, village_address, village_region, village_type, village_x, village_y, village_lng, village_lat, source) values ('{village_code}','{village_name}','{village_address}','{village_region}','{village_type}','{village_x}','{village_y}','{village_lng}','{village_lat}','{source}');commit;end;");
+            return "[]";
+            
+        }
+
+        //string list = HttpContext.Request.Form["list"];
+        //var obj = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(list);
+        //for (int i = 0; i < obj.Count; i++)
+        //{ // print numbers from 1 to 5
+        //    Console.WriteLine(obj[i]);
+        //}
 
         public string CreateVillage()
         {

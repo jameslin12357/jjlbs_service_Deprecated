@@ -26,6 +26,7 @@ namespace jjlbs_service.oracle
                 }
                 catch (OracleException ex)
                 {
+
                     throw new Exception(ex.Message);
                 }
                 connection.Close();

@@ -83,7 +83,6 @@
     @*<script language="javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=5a757297a2ef60c6c50aa13e4fb8f311&plugin=Map3D,AMap.Scale,AMap.ControlBar,Amap.PolyEditor,AMap.MouseTool"></script>*@
     <script src="~/layui-v2.5.4/layui/layui.js" charset="utf-8"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/require.js"></script>
     <script language="javascript">
 
         var form, layer;
@@ -771,7 +770,13 @@
             for (var i = 0; i < errors.length; i++) {
                 errors[i].remove();
             }
-            var inputs = e.getElementsByTagName('input');
+            if (document.getElementById('fieldHidden').value === "") {
+                var div = document.createElement('div');
+                div.classList.add("clRedError");
+                div.innerHTML += `<p class="mb-5">请输入边界</p>`;
+                        e.appendChild(div);
+            } else {
+                        var inputs = e.getElementsByTagName('input');
             var selects = e.getElementsByTagName('select');
             var village_name = inputs[0].value;
             var village_address = inputs[1].value;
@@ -797,7 +802,8 @@
                         })
                         e.appendChild(div);
                     } else {
-                        document.getElementsByClassName("modalSmall")[0].remove();
+                        //document.getElementsByClassName("modalSmall")[0].remove();
+                        layer.closeAll();
                         layer.msg("小区已添加");
                         //$('#dg').datagrid('insertRow', {
                         //    index: 0,
@@ -816,6 +822,8 @@
                     console.log(err);
                 }
             });
+            }
+    
         }
 
         function newVillage(e) {
@@ -825,39 +833,44 @@
                 document.getElementsByClassName("modalSmall")[i].remove();
             }
             mousetool.close(true);
-
-            var container = document.createElement('div');
-            container.setAttribute("class", "modalSmall");
-            container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">新建小区</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();addVillage(this);">
+            layer.open({
+                btn: [],
+  //               yes: function(index, layero){
+  //  //按钮【按钮一】的回调
+  //                   document.getElementsByTagName('form')[0].submit();
+  //},
+                shade: 0,
+                title: "新建小区",
+                content: `<form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();addVillage(this);">
                    <div class="layui-form-item">
                     <label class="layui-form-label">小区名称</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+                      <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" required>
                     </div>
                   </div>
                   <div class="layui-form-item">
                     <label class="layui-form-label">详细地址</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+                      <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input"  required>
                     </div>
                   </div>
                   <!--<div class="layui-form-item">
                     <label class="layui-form-label">区域</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+                      <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input"  required>
                     </div>
                   </div>
                <div class="layui-form-item">
                     <label class="layui-form-label">类型</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+                      <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input"  required>
                     </div>
                   </div>-->
 
               <div class="layui-form-item">
                 <label class="layui-form-label">区域</label>
                 <div class="layui-input-block">
-                  <select name="region" lay-filter="aihao">
+                  <select name="region" lay-filter="aihao"  required>
                             <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
                             <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
                             <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
@@ -877,7 +890,7 @@
 <div class="layui-form-item">
                 <label class="layui-form-label">类型</label>
                 <div class="layui-input-block">
-                  <select name="type" lay-filter="aihao">
+                  <select name="type" lay-filter="aihao"  required>
                     <option value="商务住宅;住宅区;住宅小区">商务住宅;住宅区;住宅小区</option>
                   </select>
                 </div>
@@ -885,7 +898,7 @@
                 <div class="layui-form-item hidden">
                     <label class="layui-form-label"></label>
                     <div class="layui-input-inline">
-                      <input type="text" id="fieldHidden" name="village_bounds" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+                      <input type="text" id="fieldHidden" name="village_bounds" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
                     </div>
                   </div>
 <div class="layui-form-item">
@@ -897,16 +910,100 @@
 
 
 
-<div class="layui-form-item">
+
+<!--<div class="layui-form-item">
                     <div class="layui-input-block">
                       <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
                     </div>
                   </div>
-                  </div>
+                  </div>-->
+ <button type="submit" class="layui-btn layui-btn-normal fr">保存</button>
+</form>`
+               
+            });
 
-</form>`;
-            //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
-            document.getElementsByTagName("body")[0].appendChild(container);
+
+//            var container = document.createElement('div');
+//            container.setAttribute("class", "modalSmall");
+//            container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">新建小区</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();addVillage(this);">
+//                   <div class="layui-form-item">
+//                    <label class="layui-form-label">小区名称</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+//                    </div>
+//                  </div>
+//                  <div class="layui-form-item">
+//                    <label class="layui-form-label">详细地址</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+//                    </div>
+//                  </div>
+//                  <!--<div class="layui-form-item">
+//                    <label class="layui-form-label">区域</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+//                    </div>
+//                  </div>
+//               <div class="layui-form-item">
+//                    <label class="layui-form-label">类型</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+//                    </div>
+//                  </div>-->
+
+//              <div class="layui-form-item">
+//                <label class="layui-form-label">区域</label>
+//                <div class="layui-input-block">
+//                  <select name="region" lay-filter="aihao">
+//                            <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
+//                            <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
+//                            <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
+//                            <option value="内蒙古自治区/赤峰市/阿鲁科尔沁旗">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
+//                            <option value="内蒙古自治区/赤峰市/巴林左旗">内蒙古自治区/赤峰市/巴林左旗</option>
+//                            <option value="内蒙古自治区/赤峰市/巴林右旗">内蒙古自治区/赤峰市/巴林右旗</option>
+//                            <option value="内蒙古自治区/赤峰市/林西县">内蒙古自治区/赤峰市/林西县</option>
+//                            <option value="内蒙古自治区/赤峰市/克什克腾旗">内蒙古自治区/赤峰市/克什克腾旗</option>
+//                            <option value="内蒙古自治区/赤峰市/翁牛特旗">内蒙古自治区/赤峰市/翁牛特旗</option>
+//                            <option value="内蒙古自治区/赤峰市/喀喇沁旗">内蒙古自治区/赤峰市/喀喇沁旗</option>
+//                            <option value="内蒙古自治区/赤峰市/宁城县">内蒙古自治区/赤峰市/宁城县</option>
+//                            <option value="内蒙古自治区/赤峰市/敖汉旗">内蒙古自治区/赤峰市/敖汉旗</option>
+//                  </select>
+//                </div>
+//              </div>
+
+//<div class="layui-form-item">
+//                <label class="layui-form-label">类型</label>
+//                <div class="layui-input-block">
+//                  <select name="type" lay-filter="aihao">
+//                    <option value="商务住宅;住宅区;住宅小区">商务住宅;住宅区;住宅小区</option>
+//                  </select>
+//                </div>
+//              </div>
+//                <div class="layui-form-item hidden">
+//                    <label class="layui-form-label"></label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" id="fieldHidden" name="village_bounds" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+//                    </div>
+//                  </div>
+//<div class="layui-form-item">
+//                <label class="layui-form-label">编辑边界</label>
+//                <div class="layui-input-block">
+//                  <input type="checkbox" name="close" lay-skin="switch" lay-text="是|否" lay-filter="switchT" id='cb'>
+//                </div>
+//              </div>
+
+
+
+//<div class="layui-form-item">
+//                    <div class="layui-input-block">
+//                      <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
+//                    </div>
+//                  </div>
+//                  </div>
+
+//</form>`;
+//            //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
+//            document.getElementsByTagName("body")[0].appendChild(container);
             form.render();
             form.on('switch(switchT)', function (data) {
                 if (data.elem.checked) {
@@ -927,9 +1024,9 @@
 
 
         function addBuilding(e) {
-            document.getElementById('cb').checked = false;
-            form.render('checkbox');
-            mousetool.close(true);
+            //document.getElementById('cb').checked = false;
+            //form.render('checkbox');
+            //mousetool.close(true);
             var errors = document.getElementsByClassName("clRedError");
             for (var i = 0; i < errors.length; i++) {
                 errors[i].remove();
@@ -964,7 +1061,8 @@
                         })
                         e.appendChild(div);
                     } else {
-                        document.getElementsByClassName("modalSmall")[0].remove();
+                        //document.getElementsByClassName("modalSmall")[0].remove();
+                        layer.closeAll();
                         layer.msg("楼宇已添加");
                         //$('#dg').datagrid('insertRow', {
                         //    index: 0,
@@ -992,32 +1090,37 @@
                 document.getElementsByClassName("modalSmall")[i].remove();
             }
             mousetool.close(true);
-
-            var container = document.createElement('div');
-            container.setAttribute("class", "modalSmall");
-            container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">新建楼宇</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();addBuilding(this);">
+              layer.open({
+                btn: [],
+  //               yes: function(index, layero){
+  //  //按钮【按钮一】的回调
+  //                   document.getElementsByTagName('form')[0].submit();
+  //},
+                shade: 0,
+                title: "新建楼宇",
+                content: `<form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();addBuilding(this);">
                    <div class="layui-form-item">
                     <label class="layui-form-label">楼宇号码</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="building_number" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+                      <input type="text" name="building_number" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" required>
                     </div>
                   </div>
               <div class="layui-form-item">
                     <label class="layui-form-label">楼宇名称</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="building_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+                      <input type="text" name="building_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" required>
                     </div>
                   </div>
                   <div class="layui-form-item">
                     <label class="layui-form-label">详细地址</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="building_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+                      <input type="text" name="building_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" required>
                     </div>
                   </div>
               <div class="layui-form-item">
                 <label class="layui-form-label">区域</label>
                 <div class="layui-input-block">
-                  <select name="region" lay-filter="aihao">
+                  <select name="region" lay-filter="aihao" required>
                             <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
                             <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
                             <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
@@ -1037,7 +1140,7 @@
 <div class="layui-form-item">
                 <label class="layui-form-label">类型</label>
                 <div class="layui-input-block">
-                  <select name="type" lay-filter="aihao">
+                  <select name="type" lay-filter="aihao" required>
                     <option value="地名地址信息;门牌信息;楼栋号">地名地址信息;门牌信息;楼栋号</option>
                   </select>
                 </div>
@@ -1056,16 +1159,92 @@
               </div>-->
 
 
-<div class="layui-form-item">
+<!--<div class="layui-form-item">
                     <div class="layui-input-block">
                       <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
                     </div>
                   </div>
-                  </div>
+                  </div>-->
+ <button type="submit" class="layui-btn layui-btn-normal fr">保存</button>
 
-</form>`;
+</form>`
+               
+              });
+
+
+//            var container = document.createElement('div');
+//            container.setAttribute("class", "modalSmall");
+//            container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">新建楼宇</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();addBuilding(this);">
+//                   <div class="layui-form-item">
+//                    <label class="layui-form-label">楼宇号码</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="building_number" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+//                    </div>
+//                  </div>
+//              <div class="layui-form-item">
+//                    <label class="layui-form-label">楼宇名称</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="building_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+//                    </div>
+//                  </div>
+//                  <div class="layui-form-item">
+//                    <label class="layui-form-label">详细地址</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="building_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+//                    </div>
+//                  </div>
+//              <div class="layui-form-item">
+//                <label class="layui-form-label">区域</label>
+//                <div class="layui-input-block">
+//                  <select name="region" lay-filter="aihao">
+//                            <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
+//                            <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
+//                            <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
+//                            <option value="内蒙古自治区/赤峰市/阿鲁科尔沁旗">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
+//                            <option value="内蒙古自治区/赤峰市/巴林左旗">内蒙古自治区/赤峰市/巴林左旗</option>
+//                            <option value="内蒙古自治区/赤峰市/巴林右旗">内蒙古自治区/赤峰市/巴林右旗</option>
+//                            <option value="内蒙古自治区/赤峰市/林西县">内蒙古自治区/赤峰市/林西县</option>
+//                            <option value="内蒙古自治区/赤峰市/克什克腾旗">内蒙古自治区/赤峰市/克什克腾旗</option>
+//                            <option value="内蒙古自治区/赤峰市/翁牛特旗">内蒙古自治区/赤峰市/翁牛特旗</option>
+//                            <option value="内蒙古自治区/赤峰市/喀喇沁旗">内蒙古自治区/赤峰市/喀喇沁旗</option>
+//                            <option value="内蒙古自治区/赤峰市/宁城县">内蒙古自治区/赤峰市/宁城县</option>
+//                            <option value="内蒙古自治区/赤峰市/敖汉旗">内蒙古自治区/赤峰市/敖汉旗</option>
+//                  </select>
+//                </div>
+//              </div>
+
+//<div class="layui-form-item">
+//                <label class="layui-form-label">类型</label>
+//                <div class="layui-input-block">
+//                  <select name="type" lay-filter="aihao">
+//                    <option value="地名地址信息;门牌信息;楼栋号">地名地址信息;门牌信息;楼栋号</option>
+//                  </select>
+//                </div>
+//              </div>
+//               <!--<div class="layui-form-item hidden">
+//                    <label class="layui-form-label"></label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" id="fieldHidden" name="building_bounds" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+//                    </div>
+//                  </div>
+//<div class="layui-form-item">
+//                <label class="layui-form-label">编辑边界</label>
+//                <div class="layui-input-block">
+//                  <input type="checkbox" name="close" lay-skin="switch" lay-text="是|否" lay-filter="switchT" id="cb">
+//                </div>
+//              </div>-->
+
+
+//<div class="layui-form-item">
+//                    <div class="layui-input-block">
+//                      <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
+//                    </div>
+//                  </div>
+//                  </div>
+
+//</form>`;
             //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
-            document.getElementsByTagName("body")[0].appendChild(container);
+            //document.getElementsByTagName("body")[0].appendChild(container);
             form.render();
             //form.on('switch(switchT)', function (data) {
             //    if (data.elem.checked) {
@@ -1086,11 +1265,22 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (data) {
-                        var container = document.createElement('div');
-                        container.setAttribute("class", "modalSmall");
-                        container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><div class="mb-10"><span class="mr-5 bold">小区名称:</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div  class="mb-10"><span class="mr-5 bold">详细地址:</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div  class="mb-10"><span class="mr-5 bold">区域:</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div  class="mb-10"><span class="mr-5 bold">类型:</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div>`;
-                        //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
-                        document.getElementsByTagName("body")[0].appendChild(container);
+                             layer.open({
+                btn: [],
+  //               yes: function(index, layero){
+  //  //按钮【按钮一】的回调
+  //                   document.getElementsByTagName('form')[0].submit();
+  //},
+                shade: 0,
+                title: "小区信息",
+                content: `<div class="mb-10"><span class="mr-5 bold">小区名称:</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div  class="mb-10"><span class="mr-5 bold">详细地址:</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div  class="mb-10"><span class="mr-5 bold">区域:</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div  class="mb-10"><span class="mr-5 bold">类型:</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div>`
+               
+            });
+                        //var container = document.createElement('div');
+                        //container.setAttribute("class", "modalSmall");
+                        //container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><div class="mb-10"><span class="mr-5 bold">小区名称:</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div  class="mb-10"><span class="mr-5 bold">详细地址:</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div  class="mb-10"><span class="mr-5 bold">区域:</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div  class="mb-10"><span class="mr-5 bold">类型:</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div>`;
+                        ////htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
+                        //document.getElementsByTagName("body")[0].appendChild(container);
                     },
                     error: function (item, err) {
                         console.log(err);
@@ -1111,11 +1301,22 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (data) {
-                        var container = document.createElement('div');
-                        container.setAttribute("class", "modalSmall");
-                        container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">楼宇信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><div class="mb-10"><span class="mr-5 bold">楼宇名称:</span><span>${data["ds"][0]["BUILDING_NAME"]}</span></div><div  class="mb-10"><span class="mr-5 bold">详细地址:</span><span>${data["ds"][0]["BUILDING_ADDRESS"]}</span></div><div  class="mb-10"><span class="mr-5 bold">区域:</span><span>${data["ds"][0]["REGION"]}</span></div><div  class="mb-10"><span class="mr-5 bold">类型:</span><span>${data["ds"][0]["TYPE"]}</span></div>`;
-                        //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
-                        document.getElementsByTagName("body")[0].appendChild(container);
+                                      layer.open({
+                btn: [],
+  //               yes: function(index, layero){
+  //  //按钮【按钮一】的回调
+  //                   document.getElementsByTagName('form')[0].submit();
+  //},
+                shade: 0,
+                title: "楼宇信息",
+                content: `<div class="mb-10"><span class="mr-5 bold">楼宇名称:</span><span>${data["ds"][0]["BUILDING_NAME"]}</span></div><div  class="mb-10"><span class="mr-5 bold">详细地址:</span><span>${data["ds"][0]["BUILDING_ADDRESS"]}</span></div><div  class="mb-10"><span class="mr-5 bold">区域:</span><span>${data["ds"][0]["REGION"]}</span></div><div  class="mb-10"><span class="mr-5 bold">类型:</span><span>${data["ds"][0]["TYPE"]}</span></div>`
+               
+            });
+                        //var container = document.createElement('div');
+                        //container.setAttribute("class", "modalSmall");
+                        //container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">楼宇信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><div class="mb-10"><span class="mr-5 bold">楼宇名称:</span><span>${data["ds"][0]["BUILDING_NAME"]}</span></div><div  class="mb-10"><span class="mr-5 bold">详细地址:</span><span>${data["ds"][0]["BUILDING_ADDRESS"]}</span></div><div  class="mb-10"><span class="mr-5 bold">区域:</span><span>${data["ds"][0]["REGION"]}</span></div><div  class="mb-10"><span class="mr-5 bold">类型:</span><span>${data["ds"][0]["TYPE"]}</span></div>`;
+                        ////htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
+                        //document.getElementsByTagName("body")[0].appendChild(container);
                     },
                     error: function (item, err) {
                         console.log(err);
@@ -1179,60 +1380,66 @@
             for (var i = 0; i < errors.length; i++) {
                 errors[i].remove();
             }
-            var inputs = e.getElementsByTagName('input');
-            var village_name = inputs[0].value;
-            var village_address = inputs[1].value;
-            var village_region = inputs[2].value;
-            var village_type = inputs[3].value;
-            var village_bounds = document.getElementById('fieldHidden').value;
-            //var polygon;
-            //var overlays = map.getAllOverlays("polygon");
-            //overlays.forEach(function (overlay) {
-            //    if (overlay.getOptions()["strokeColor"] === "#D00000") {
-            //        polygon = overlay;
-            //    }
-            //});
-            //village_bounds = "[";
-            //polygon.getPath().forEach(function (coord) {
-            //    village_bounds += `[${String(coord["lng"])},${String(coord["lat"])}],`;
-            //});
-            //village_bounds = village_bounds.slice(0, village_bounds.length - 1);
-            //village_bounds += "]";
-            var dataGuid = e.getAttribute("data-guid");
+            if (document.getElementById('fieldHidden').value === "") {
+                var div = document.createElement('div');
+                div.classList.add("clRedError");
+                div.innerHTML += `<p class="mb-5">请输入边界</p>`;
+                e.appendChild(div);
+            } else {
+                var inputs = e.getElementsByTagName('input');
+                var village_name = inputs[0].value;
+                var village_address = inputs[1].value;
+                var village_region = inputs[2].value;
+                var village_type = inputs[3].value;
+                var village_bounds = document.getElementById('fieldHidden').value;
+                //var polygon;
+                //var overlays = map.getAllOverlays("polygon");
+                //overlays.forEach(function (overlay) {
+                //    if (overlay.getOptions()["strokeColor"] === "#D00000") {
+                //        polygon = overlay;
+                //    }
+                //});
+                //village_bounds = "[";
+                //polygon.getPath().forEach(function (coord) {
+                //    village_bounds += `[${String(coord["lng"])},${String(coord["lat"])}],`;
+                //});
+                //village_bounds = village_bounds.slice(0, village_bounds.length - 1);
+                //village_bounds += "]";
+                var dataGuid = e.getAttribute("data-guid");
 
-            $.ajax({
-                type: "post",
-                url: `./API/EditVillageBounds?id=${dataGuid}`,
-                data: { "village_name": village_name, "village_address": village_address, "village_region": village_region, "village_type": village_type, "village_bounds": village_bounds },
-                dataType: "json",
-                success: function (data) {
-                    if (data.length !== 0) {
-                        var div = document.createElement('div');
-                        div.classList.add("clRedError");
-                        data.forEach(function (error) {
-                            div.innerHTML += `<p class="mb-5">${error}</p>`;
-                        })
-                        e.appendChild(div);
-                    } else {
-                        document.getElementsByClassName("modalSmall")[0].remove();
-                        layer.msg("小区已编辑");
-                        $('#dg').datagrid('updateRow', {
-                            index: document.getElementsByTagName("body")[0].getAttribute("data-currentindex"),
-                            row: {
-                                village_name: village_name,
-                                village_address: village_address,
-                                village_region: village_region,
-                                village_type: village_type
-                            }
-                        });
+                $.ajax({
+                    type: "post",
+                    url: `./API/EditVillageBounds?id=${dataGuid}`,
+                    data: { "village_name": village_name, "village_address": village_address, "village_region": village_region, "village_type": village_type, "village_bounds": village_bounds },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.length !== 0) {
+                            var div = document.createElement('div');
+                            div.classList.add("clRedError");
+                            data.forEach(function (error) {
+                                div.innerHTML += `<p class="mb-5">${error}</p>`;
+                            })
+                            e.appendChild(div);
+                        } else {
+                            layer.closeAll();
+                            layer.msg("小区已编辑");
+                            $('#dg').datagrid('updateRow', {
+                                index: document.getElementsByTagName("body")[0].getAttribute("data-currentindex"),
+                                row: {
+                                    village_name: village_name,
+                                    village_address: village_address,
+                                    village_region: village_region,
+                                    village_type: village_type
+                                }
+                            });
+                        }
+
+                    },
+                    error: function (item, err) {
+                        console.log(err);
                     }
-
-                },
-                error: function (item, err) {
-                    console.log(err);
-                }
-            });
-
+                });
+            }
         }
         //function closeEditor(polygon) {
         //    document.getElementById('cb').checked = false;
@@ -1285,7 +1492,7 @@
                         })
                         e.appendChild(div);
                     } else {
-                        document.getElementsByClassName("modalSmall")[0].remove();
+                        layer.closeAll();
                         layer.msg("小区已编辑");
                         $('#dg').datagrid('updateRow', {
                             index: document.getElementsByTagName("body")[0].getAttribute("data-currentindex"),
@@ -1334,7 +1541,7 @@
                         })
                         e.appendChild(div);
                     } else {
-                        document.getElementsByClassName("modalSmall")[0].remove();
+                        layer.closeAll();
                         layer.msg("楼宇已编辑");
                         $('#dg2').datagrid('updateRow', {
                             index: document.getElementsByTagName("body")[0].getAttribute("data-currentindex"),
@@ -1448,38 +1655,45 @@
                     dataType: "json",
                     success: function (data) {
                         if (data["ds"][0]["VILLAGE_BOUNDS"] === "null") {
-                            var container = document.createElement('div');
-                            container.setAttribute("class", "modalSmall");
-                            container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">编辑小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();editPoiBounds(this);" data-guid=${dataGuid}>
+                            layer.open({
+                btn: [],
+  //               yes: function(index, layero){
+  //  //按钮【按钮一】的回调
+  //                   document.getElementsByTagName('form')[0].submit();
+  //},
+                shade: 0,
+                title: "编辑小区信息",
+                content: `<form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();editPoiBounds(this);" data-guid=${dataGuid}>
                    <div class="layui-form-item">
                     <label class="layui-form-label">小区名称</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_NAME"]}">
+                      <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" required value="${data["ds"][0]["VILLAGE_NAME"]}">
                     </div>
                   </div>
                   <div class="layui-form-item">
                     <label class="layui-form-label">详细地址</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_ADDRESS"]}">
+                      <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input"  required  value="${data["ds"][0]["VILLAGE_ADDRESS"]}">
                     </div>
                   </div>
                   <!--<div class="layui-form-item">
                     <label class="layui-form-label">区域</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_REGION"]}">
+                      <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input"  required value="${data["ds"][0]["VILLAGE_REGION"]}">
                     </div>
                   </div>
-                  <div class="layui-form-item">
+               <div class="layui-form-item">
                     <label class="layui-form-label">类型</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_TYPE"]}">
+                      <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input"  required  value="${data["ds"][0]["VILLAGE_TYPE"]}">
                     </div>
                   </div>-->
-               <div class="layui-form-item">
+
+              <div class="layui-form-item">
                 <label class="layui-form-label">区域</label>
                 <div class="layui-input-block">
-                  <select name="region" lay-filter="aihao" id="selectRegionForm">
-                             <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
+                  <select name="region" lay-filter="aihao"  required id="selectRegionForm">
+                            <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
                             <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
                             <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
                             <option value="内蒙古自治区/赤峰市/阿鲁科尔沁旗">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
@@ -1498,39 +1712,121 @@
 <div class="layui-form-item">
                 <label class="layui-form-label">类型</label>
                 <div class="layui-input-block">
-                  <select name="type" lay-filter="aihao">
+                  <select name="type" lay-filter="aihao"  required>
                     <option value="商务住宅;住宅区;住宅小区">商务住宅;住宅区;住宅小区</option>
                   </select>
                 </div>
               </div>
-                   <!--<div class="layui-form-item">
-                    <label class="layui-form-label">开关-默认关</label>
-                    <div class="layui-input-block">
-                      <input type="checkbox" name="close" lay-skin="switch" lay-text="ON|OFF" lay-filter="switch1">
-                    </div>
-                  </div>-->
                 <div class="layui-form-item hidden">
                     <label class="layui-form-label"></label>
                     <div class="layui-input-inline">
-                      <input type="text" id="fieldHidden" name="building_bounds" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+                      <input type="text" id="fieldHidden" name="village_bounds" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
                     </div>
                   </div>
 <div class="layui-form-item">
                 <label class="layui-form-label">编辑边界</label>
                 <div class="layui-input-block">
-                  <input type="checkbox" name="close" lay-skin="switch" lay-text="是|否" lay-filter="switchT" id="cb">
+                  <input type="checkbox" name="close" lay-skin="switch" lay-text="是|否" lay-filter="switchT" id='cb'>
                 </div>
               </div>
 
-<div class="layui-form-item">
+
+
+
+<!--<div class="layui-form-item">
                     <div class="layui-input-block">
                       <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
                     </div>
                   </div>
-                  </div>
+                  </div>-->
+ <button type="submit" class="layui-btn layui-btn-normal fr">保存</button>
+</form>`
+               
+            });
 
-</form>`;
-                            document.getElementsByTagName("body")[0].appendChild(container);
+//                            var container = document.createElement('div');
+//                            container.setAttribute("class", "modalSmall");
+//                            container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">编辑小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();editPoiBounds(this);" data-guid=${dataGuid}>
+//                   <div class="layui-form-item">
+//                    <label class="layui-form-label">小区名称</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_NAME"]}">
+//                    </div>
+//                  </div>
+//                  <div class="layui-form-item">
+//                    <label class="layui-form-label">详细地址</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_ADDRESS"]}">
+//                    </div>
+//                  </div>
+//                  <!--<div class="layui-form-item">
+//                    <label class="layui-form-label">区域</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_REGION"]}">
+//                    </div>
+//                  </div>
+//                  <div class="layui-form-item">
+//                    <label class="layui-form-label">类型</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_TYPE"]}">
+//                    </div>
+//                  </div>-->
+//               <div class="layui-form-item">
+//                <label class="layui-form-label">区域</label>
+//                <div class="layui-input-block">
+//                  <select name="region" lay-filter="aihao" id="selectRegionForm">
+//                             <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
+//                            <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
+//                            <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
+//                            <option value="内蒙古自治区/赤峰市/阿鲁科尔沁旗">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
+//                            <option value="内蒙古自治区/赤峰市/巴林左旗">内蒙古自治区/赤峰市/巴林左旗</option>
+//                            <option value="内蒙古自治区/赤峰市/巴林右旗">内蒙古自治区/赤峰市/巴林右旗</option>
+//                            <option value="内蒙古自治区/赤峰市/林西县">内蒙古自治区/赤峰市/林西县</option>
+//                            <option value="内蒙古自治区/赤峰市/克什克腾旗">内蒙古自治区/赤峰市/克什克腾旗</option>
+//                            <option value="内蒙古自治区/赤峰市/翁牛特旗">内蒙古自治区/赤峰市/翁牛特旗</option>
+//                            <option value="内蒙古自治区/赤峰市/喀喇沁旗">内蒙古自治区/赤峰市/喀喇沁旗</option>
+//                            <option value="内蒙古自治区/赤峰市/宁城县">内蒙古自治区/赤峰市/宁城县</option>
+//                            <option value="内蒙古自治区/赤峰市/敖汉旗">内蒙古自治区/赤峰市/敖汉旗</option>
+//                  </select>
+//                </div>
+//              </div>
+
+//<div class="layui-form-item">
+//                <label class="layui-form-label">类型</label>
+//                <div class="layui-input-block">
+//                  <select name="type" lay-filter="aihao">
+//                    <option value="商务住宅;住宅区;住宅小区">商务住宅;住宅区;住宅小区</option>
+//                  </select>
+//                </div>
+//              </div>
+//                   <!--<div class="layui-form-item">
+//                    <label class="layui-form-label">开关-默认关</label>
+//                    <div class="layui-input-block">
+//                      <input type="checkbox" name="close" lay-skin="switch" lay-text="ON|OFF" lay-filter="switch1">
+//                    </div>
+//                  </div>-->
+//                <div class="layui-form-item hidden">
+//                    <label class="layui-form-label"></label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" id="fieldHidden" name="building_bounds" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" >
+//                    </div>
+//                  </div>
+//<div class="layui-form-item">
+//                <label class="layui-form-label">编辑边界</label>
+//                <div class="layui-input-block">
+//                  <input type="checkbox" name="close" lay-skin="switch" lay-text="是|否" lay-filter="switchT" id="cb">
+//                </div>
+//              </div>
+
+//<div class="layui-form-item">
+//                    <div class="layui-input-block">
+//                      <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
+//                    </div>
+//                  </div>
+//                  </div>
+
+//</form>`;
+                            //document.getElementsByTagName("body")[0].appendChild(container);
                             var village_region = data["ds"][0]["VILLAGE_REGION"];
                             var selectRegionForm = document.getElementById('selectRegionForm');
                             if (village_region === '内蒙古自治区/赤峰市/红山区') {
@@ -1575,38 +1871,45 @@
                                     polygon = overlay;
                                 }
                             });
-                            var container = document.createElement('div');
-                            container.setAttribute("class", "modalSmall");
-                            container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">编辑小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action=""  data-guid=${dataGuid}>
+                               layer.open({
+                btn: [],
+  //               yes: function(index, layero){
+  //  //按钮【按钮一】的回调
+  //                   document.getElementsByTagName('form')[0].submit();
+  //},
+                shade: 0,
+                title: "编辑小区信息",
+                content: `<form class="layui-form layui-form-pane" action="" data-guid=${dataGuid}>
                    <div class="layui-form-item">
                     <label class="layui-form-label">小区名称</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_NAME"]}">
+                      <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" required value="${data["ds"][0]["VILLAGE_NAME"]}">
                     </div>
                   </div>
                   <div class="layui-form-item">
                     <label class="layui-form-label">详细地址</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_ADDRESS"]}">
+                      <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input"  required  value="${data["ds"][0]["VILLAGE_ADDRESS"]}">
                     </div>
                   </div>
-                     <!--<div class="layui-form-item">
+                  <!--<div class="layui-form-item">
                     <label class="layui-form-label">区域</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_REGION"]}">
+                      <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input"  required value="${data["ds"][0]["VILLAGE_REGION"]}">
                     </div>
                   </div>
-                  <div class="layui-form-item">
+               <div class="layui-form-item">
                     <label class="layui-form-label">类型</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_TYPE"]}">
+                      <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input"  required  value="${data["ds"][0]["VILLAGE_TYPE"]}">
                     </div>
                   </div>-->
+
               <div class="layui-form-item">
                 <label class="layui-form-label">区域</label>
                 <div class="layui-input-block">
-                  <select name="region" lay-filter="aihao" id="selectRegionForm">
-                             <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
+                  <select name="region" lay-filter="aihao"  required id="selectRegionForm">
+                            <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
                             <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
                             <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
                             <option value="内蒙古自治区/赤峰市/阿鲁科尔沁旗">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
@@ -1625,34 +1928,115 @@
 <div class="layui-form-item">
                 <label class="layui-form-label">类型</label>
                 <div class="layui-input-block">
-                  <select name="type" lay-filter="aihao">
+                  <select name="type" lay-filter="aihao"  required>
                     <option value="商务住宅;住宅区;住宅小区">商务住宅;住宅区;住宅小区</option>
                   </select>
                 </div>
               </div>
-                   <!--<div class="layui-form-item">
-                    <label class="layui-form-label">开关-默认关</label>
-                    <div class="layui-input-block">
-                      <input type="checkbox" name="close" lay-skin="switch" lay-text="ON|OFF" lay-filter="switch1">
+                <div class="layui-form-item hidden">
+                    <label class="layui-form-label"></label>
+                    <div class="layui-input-inline">
+                      <input type="text" id="fieldHidden" name="village_bounds" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
                     </div>
-                  </div>-->
-
+                  </div>
 <div class="layui-form-item">
                 <label class="layui-form-label">编辑边界</label>
                 <div class="layui-input-block">
-                  <input type="checkbox" name="close" lay-skin="switch" lay-text="是|否" lay-filter="switchT" id="cb">
+                  <input type="checkbox" name="close" lay-skin="switch" lay-text="是|否" lay-filter="switchT" id='cb'>
                 </div>
               </div>
 
-<div class="layui-form-item">
+
+
+
+<!--<div class="layui-form-item">
                     <div class="layui-input-block">
                       <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
                     </div>
                   </div>
-                  </div>
+                  </div>-->
+ <button type="submit" class="layui-btn layui-btn-normal fr">保存</button>
+</form>`
+               
+            });
+                            //var container = document.createElement('div');
+                            //container.setAttribute("class", "modalSmall");
+//                            container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">编辑小区信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action=""  data-guid=${dataGuid}>
+//                   <div class="layui-form-item">
+//                    <label class="layui-form-label">小区名称</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_NAME"]}">
+//                    </div>
+//                  </div>
+//                  <div class="layui-form-item">
+//                    <label class="layui-form-label">详细地址</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_ADDRESS"]}">
+//                    </div>
+//                  </div>
+//                     <!--<div class="layui-form-item">
+//                    <label class="layui-form-label">区域</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="village_region" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_REGION"]}">
+//                    </div>
+//                  </div>
+//                  <div class="layui-form-item">
+//                    <label class="layui-form-label">类型</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="village_type" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["VILLAGE_TYPE"]}">
+//                    </div>
+//                  </div>-->
+//              <div class="layui-form-item">
+//                <label class="layui-form-label">区域</label>
+//                <div class="layui-input-block">
+//                  <select name="region" lay-filter="aihao" id="selectRegionForm">
+//                             <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
+//                            <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
+//                            <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
+//                            <option value="内蒙古自治区/赤峰市/阿鲁科尔沁旗">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
+//                            <option value="内蒙古自治区/赤峰市/巴林左旗">内蒙古自治区/赤峰市/巴林左旗</option>
+//                            <option value="内蒙古自治区/赤峰市/巴林右旗">内蒙古自治区/赤峰市/巴林右旗</option>
+//                            <option value="内蒙古自治区/赤峰市/林西县">内蒙古自治区/赤峰市/林西县</option>
+//                            <option value="内蒙古自治区/赤峰市/克什克腾旗">内蒙古自治区/赤峰市/克什克腾旗</option>
+//                            <option value="内蒙古自治区/赤峰市/翁牛特旗">内蒙古自治区/赤峰市/翁牛特旗</option>
+//                            <option value="内蒙古自治区/赤峰市/喀喇沁旗">内蒙古自治区/赤峰市/喀喇沁旗</option>
+//                            <option value="内蒙古自治区/赤峰市/宁城县">内蒙古自治区/赤峰市/宁城县</option>
+//                            <option value="内蒙古自治区/赤峰市/敖汉旗">内蒙古自治区/赤峰市/敖汉旗</option>
+//                  </select>
+//                </div>
+//              </div>
 
-</form>`;
-                            document.getElementsByTagName("body")[0].appendChild(container);
+//<div class="layui-form-item">
+//                <label class="layui-form-label">类型</label>
+//                <div class="layui-input-block">
+//                  <select name="type" lay-filter="aihao">
+//                    <option value="商务住宅;住宅区;住宅小区">商务住宅;住宅区;住宅小区</option>
+//                  </select>
+//                </div>
+//              </div>
+//                   <!--<div class="layui-form-item">
+//                    <label class="layui-form-label">开关-默认关</label>
+//                    <div class="layui-input-block">
+//                      <input type="checkbox" name="close" lay-skin="switch" lay-text="ON|OFF" lay-filter="switch1">
+//                    </div>
+//                  </div>-->
+
+//<div class="layui-form-item">
+//                <label class="layui-form-label">编辑边界</label>
+//                <div class="layui-input-block">
+//                  <input type="checkbox" name="close" lay-skin="switch" lay-text="是|否" lay-filter="switchT" id="cb">
+//                </div>
+//              </div>
+
+//<div class="layui-form-item">
+//                    <div class="layui-input-block">
+//                      <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
+//                    </div>
+//                  </div>
+//                  </div>
+
+//</form>`;
+//                            document.getElementsByTagName("body")[0].appendChild(container);
                             var village_region = data["ds"][0]["VILLAGE_REGION"];
                             var selectRegionForm = document.getElementById('selectRegionForm');
                             if (village_region === '内蒙古自治区/赤峰市/红山区') {
@@ -1718,31 +2102,37 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (data) {
-                        var container = document.createElement('div');
-                        container.setAttribute("class", "modalSmall");
-                        container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">编辑楼宇信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();editPoiBuilding(this);" data-guid=${dataGuid}>
+                                               layer.open({
+                btn: [],
+  //               yes: function(index, layero){
+  //  //按钮【按钮一】的回调
+  //                   document.getElementsByTagName('form')[0].submit();
+  //},
+                shade: 0,
+                title: "编辑楼宇信息",
+                content: `<form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();editPoiBuilding(this);" data-guid=${dataGuid}>
                   <div class="layui-form-item">
                     <label class="layui-form-label">楼宇号码</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="building_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["BUILDING_NUMBER"]}">
+                      <input type="text" name="building_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["BUILDING_NUMBER"]}" required>
                     </div>
                   </div>
 <div class="layui-form-item">
                     <label class="layui-form-label">楼宇名称</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="building_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["BUILDING_NAME"]}">
+                      <input type="text" name="building_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["BUILDING_NAME"]}" required>
                     </div>
                   </div>
                   <div class="layui-form-item">
                     <label class="layui-form-label">详细地址</label>
                     <div class="layui-input-inline">
-                      <input type="text" name="building_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["BUILDING_ADDRESS"]}">
+                      <input type="text" name="building_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["BUILDING_ADDRESS"]}" required>
                     </div>
                   </div>
               <div class="layui-form-item">
                 <label class="layui-form-label">区域</label>
                 <div class="layui-input-block">
-                  <select name="region" lay-filter="aihao" id="selectRegionForm">
+                  <select name="region" lay-filter="aihao" id="selectRegionForm" required>
                             <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
                             <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
                             <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
@@ -1762,23 +2152,80 @@
 <div class="layui-form-item">
                 <label class="layui-form-label">类型</label>
                 <div class="layui-input-block">
-                  <select name="type" lay-filter="aihao">
+                  <select name="type" lay-filter="aihao" required>
                     <option value="地名地址信息;门牌信息;楼栋号">地名地址信息;门牌信息;楼栋号</option>
                   </select>
                 </div>
               </div>
 
 
-<div class="layui-form-item">
-                    <div class="layui-input-block">
-                      <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
-                    </div>
-                  </div>
-                  </div>
+ <button type="submit" class="layui-btn layui-btn-normal fr">保存</button>
 
-</form>`;
-                        //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
-                        document.getElementsByTagName("body")[0].appendChild(container);
+
+</form>`
+               
+            });
+//                        var container = document.createElement('div');
+//                        container.setAttribute("class", "modalSmall");
+//                        container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">编辑楼宇信息</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div><form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();editPoiBuilding(this);" data-guid=${dataGuid}>
+//                  <div class="layui-form-item">
+//                    <label class="layui-form-label">楼宇号码</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="building_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["BUILDING_NUMBER"]}">
+//                    </div>
+//                  </div>
+//<div class="layui-form-item">
+//                    <label class="layui-form-label">楼宇名称</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="building_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["BUILDING_NAME"]}">
+//                    </div>
+//                  </div>
+//                  <div class="layui-form-item">
+//                    <label class="layui-form-label">详细地址</label>
+//                    <div class="layui-input-inline">
+//                      <input type="text" name="building_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["BUILDING_ADDRESS"]}">
+//                    </div>
+//                  </div>
+//              <div class="layui-form-item">
+//                <label class="layui-form-label">区域</label>
+//                <div class="layui-input-block">
+//                  <select name="region" lay-filter="aihao" id="selectRegionForm">
+//                            <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
+//                            <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
+//                            <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
+//                            <option value="内蒙古自治区/赤峰市/阿鲁科尔沁旗">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
+//                            <option value="内蒙古自治区/赤峰市/巴林左旗">内蒙古自治区/赤峰市/巴林左旗</option>
+//                            <option value="内蒙古自治区/赤峰市/巴林右旗">内蒙古自治区/赤峰市/巴林右旗</option>
+//                            <option value="内蒙古自治区/赤峰市/林西县">内蒙古自治区/赤峰市/林西县</option>
+//                            <option value="内蒙古自治区/赤峰市/克什克腾旗">内蒙古自治区/赤峰市/克什克腾旗</option>
+//                            <option value="内蒙古自治区/赤峰市/翁牛特旗">内蒙古自治区/赤峰市/翁牛特旗</option>
+//                            <option value="内蒙古自治区/赤峰市/喀喇沁旗">内蒙古自治区/赤峰市/喀喇沁旗</option>
+//                            <option value="内蒙古自治区/赤峰市/宁城县">内蒙古自治区/赤峰市/宁城县</option>
+//                            <option value="内蒙古自治区/赤峰市/敖汉旗">内蒙古自治区/赤峰市/敖汉旗</option>
+//                  </select>
+//                </div>
+//              </div>
+
+//<div class="layui-form-item">
+//                <label class="layui-form-label">类型</label>
+//                <div class="layui-input-block">
+//                  <select name="type" lay-filter="aihao">
+//                    <option value="地名地址信息;门牌信息;楼栋号">地名地址信息;门牌信息;楼栋号</option>
+//                  </select>
+//                </div>
+//              </div>
+
+
+//<div class="layui-form-item">
+//                    <div class="layui-input-block">
+//                      <button class="layui-btn layui-btn-normal fr" lay-submit="" lay-filter="demo1">保存</button>
+//                    </div>
+//                  </div>
+//                  </div>
+
+//</form>`;
+//                        //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
+//                        document.getElementsByTagName("body")[0].appendChild(container);
                         var building_region = data["ds"][0]["REGION"];
                         var selectRegionForm = document.getElementById('selectRegionForm');
                         if (building_region === '内蒙古自治区/赤峰市/红山区') {
@@ -1837,7 +2284,7 @@
                     if (data.length !== 0) {
                         console.log('error');
                     } else {
-                        document.getElementsByClassName("modalSmall")[0].remove();
+                        layer.closeAll();
                         layer.msg("小区已删除");
                         var index = document.getElementsByTagName("body")[0].getAttribute("data-currentindex");
                         $('#dg').datagrid('deleteRow', index);
@@ -1861,7 +2308,7 @@
                     if (data.length !== 0) {
                         console.log('error');
                     } else {
-                        document.getElementsByClassName("modalSmall")[0].remove();
+                        layer.closeAll();
                         layer.msg("楼宇已删除");
                         var index = document.getElementsByTagName("body")[0].getAttribute("data-currentindex");
                         $('#dg2').datagrid('deleteRow', index);
@@ -1885,13 +2332,24 @@
         function deletePoi(e) {
             setTimeout(function () {
                 var dataGuid = e.getAttribute("data-guid");
-                var container = document.createElement('div');
-                container.setAttribute("class", "modalSmall");
-                container.classList.add("modalCentered");
-                container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">删除小区</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div>
-                            <div class="mb-15 tc">确定删除小区?</div><div class="tr"><button type="button" class="layui-btn layui-btn-danger" data-guid=${dataGuid} onclick="deletePoiFinal(this);">删除</button></div></div>`;
-                document.getElementsByTagName("body")[0].appendChild(container);
-                console.log('clicked second');
+                            layer.open({
+                btn: [],
+  //               yes: function(index, layero){
+  //  //按钮【按钮一】的回调
+  //                   document.getElementsByTagName('form')[0].submit();
+  //},
+                shade: 0,
+                title: "删除小区",
+                content: `<div><div class="mb-15 tc">确定删除小区?</div><div class="tr"><button type="submit" class="layui-btn layui-btn-danger" data-guid=${dataGuid} onclick="deletePoiFinal(this);">删除</button></div></div>`
+               
+            });
+                //var container = document.createElement('div');
+                //container.setAttribute("class", "modalSmall");
+                //container.classList.add("modalCentered");
+                //container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">删除小区</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div>
+                //            <div class="mb-15 tc">确定删除小区?</div><div class="tr"><button type="button" class="layui-btn layui-btn-danger" data-guid=${dataGuid} onclick="deletePoiFinal(this);">删除</button></div></div>`;
+                //document.getElementsByTagName("body")[0].appendChild(container);
+                //console.log('clicked second');
             }, 1500);
 
         }
@@ -1900,21 +2358,32 @@
         function deletePoi2(e) {
             setTimeout(function () {
                 var dataGuid = e.getAttribute("data-guid");
-                var container = document.createElement('div');
-                container.setAttribute("class", "modalSmall");
-                container.classList.add("modalCentered");
-                container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">删除楼宇</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div>
-                            <div class="mb-15 tc">确定删除楼宇?</div><div class="tr"><button type="button" class="layui-btn layui-btn-danger" data-guid=${dataGuid} onclick="deletePoiFinal2(this);">删除</button></div></div>`;
-                document.getElementsByTagName("body")[0].appendChild(container);
+                layer.open({
+                btn: [],
+  //               yes: function(index, layero){
+  //  //按钮【按钮一】的回调
+  //                   document.getElementsByTagName('form')[0].submit();
+  //},
+                shade: 0,
+                title: "删除楼宇",
+                content: `<div><div class="mb-15 tc">确定删除楼宇?</div><div class="tr"><button type="button" class="layui-btn layui-btn-danger" data-guid=${dataGuid} onclick="deletePoiFinal2(this);">删除</button></div></div>`
+               
+            });
+                //var container = document.createElement('div');
+                //container.setAttribute("class", "modalSmall");
+                //container.classList.add("modalCentered");
+                //container.innerHTML += `<div class="flex sb mb-10"><span class="bb-lightblue">删除楼宇</span><button type="button" class="layui-btn layui-btn-normal layui-btn-radius layui-btn-sm" onclick="closeModal(this);">X</button></div>
+                //            <div class="mb-15 tc">确定删除楼宇?</div><div class="tr"><button type="button" class="layui-btn layui-btn-danger" data-guid=${dataGuid} onclick="deletePoiFinal2(this);">删除</button></div></div>`;
+                //document.getElementsByTagName("body")[0].appendChild(container);
             }, 1500);
 
         }
 
         function searchVillage(e) {
             var textSearch = e.previousSibling.value;
-            if (textSearch.length === 0) {
-                layer.msg("搜索内容不能为空");
-            } else {
+            //if (textSearch.length === 0) {
+            //    layer.msg("搜索内容不能为空");
+            //} else {
                 $.ajax({
                     type: "get",
                     url: `./API/SearchVillage?text=${textSearch}`,
@@ -1932,15 +2401,15 @@
                         console.log(err);
                     }
                 });
-            }
+            //}
 
         }
 
         function searchBuilding(e) {
             var textSearch = e.previousSibling.value;
-            if (textSearch.length === 0) {
-                layer.msg("搜索内容不能为空");
-            } else {
+            //if (textSearch.length === 0) {
+            //    layer.msg("搜索内容不能为空");
+            //} else {
                 $.ajax({
                     type: "get",
                     url: `./API/SearchBuilding?text=${textSearch}`,
@@ -1958,7 +2427,7 @@
                         console.log(err);
                     }
                 });
-            }
+           // }
 
         }
 
@@ -2385,15 +2854,13 @@
 
 
         function createTables() {
-            var container = document.createElement('div');
-            container.setAttribute("id", "buttonOpenClose");
-            container.innerHTML += `<span class="bb-lightblue pb-5px mr-20">是否显示小区边界</span><button type="button" class="layui-btn layui-btn-radius layui-btn-normal layui-btn-sm" onclick="openPois(this);" disabled>是 <i class="fa fa-check"></i></button><button type="button" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-sm" onclick="closePois(this);">否</button>`;
-            document.getElementsByTagName("body")[0].appendChild(container);
+            
             var htmlTable1 = '<table id="dg" style="width:70%;height:300px" data-options="fitColumns:true,rownumbers:false,singleSelect:true,autoRowHeight:false,pagination:true,pageSize:10"><thead><tr><th field="village_name" width="80" align="center">小区名称</th><th field="village_address" width="100" align="center">地址</th><th field="village_region" width="80" align="center">区域</th><th field="village_type" width="80" align="center">类型</th><th field="village_action" width="80" align="center">操作</th><th field="village_id" align="center" hidden="true">village_id</th><th field="village_lng" align="center" hidden="true">经度</th><th field="village_lat" align="center" hidden="true">纬度</th></tr></thead></table>';
             var htmlTB1 = '<div id="tb" class="flex sb aic" style="padding: 10px;"><span class="bb-lightblue pb-5px">小区信息</span><div class="flex aic"><input type="text" placeholder="输入小区名称检索" class="mr-10 pd-5px bd2-lightblue" /><i id="inputSearchIcon" class="fa fa-search cr-lightblue" onclick="searchVillage(this)"></i><div class="mr-10"><i class="fa fa-file-o cr-lightblue" onclick="newVillage(this)"></i><span> 新建小区</span></div><div><i class="fa fa-download cr-lightblue" onclick="getVillage(this)" id="getVillage"></i><span> 更新本地数据</span></div></div></div>';
             var htmlTable2 = '<table id="dg2" style="width:30%;height:300px" data-options="fitColumns:true,rownumbers:false,singleSelect:true,autoRowHeight:false,pagination:true,pageSize:10"><thead><tr><th field="building_name" width="80" align="center">楼宇号</th><th field="building_address" width="100" align="center">详细地址（蓝牌地址码)</th><th field="building_action" width="80" align="center">操作</th></tr></thead></table>';
             var htmlTB2 = '<div id="tb2" class="flex sb aic" style="padding: 10px;"><span class="bb-lightblue pb-5px">楼宇信息</span><div class="flex aic"><input type="text" placeholder="输入楼宇号检索" class="mr-10 pd-5px bd2-lightblue" /><i id="inputSearchIcon" class="fa fa-search cr-lightblue" onclick="searchBuilding(this)"></i><div class="mr-10"><i class="fa fa-file-o cr-lightblue" onclick="newBuilding(this)"></i><span> 新建楼宇</span></div><div><i class="fa fa-download cr-lightblue" onclick="getBuilding(this)"></i><span> 更新本地数据</span></div></div></div>';
             document.getElementById("footer").innerHTML += htmlTable1 + htmlTB1 + htmlTable2 + htmlTB2;
+            
             // { data: getData(d) }
             $(function () {
                 $('#dg').datagrid({ toolbar: "#tb" }).datagrid({
@@ -2526,6 +2993,14 @@
         }
 
         createTables();
+        setTimeout(function () {
+            document.getElementsByClassName('panel-body-noheader')[0].classList.add("w-100p");
+            var container = document.createElement('div');
+            container.setAttribute("id", "buttonOpenClose");
+            container.innerHTML += `<span class="bb-lightblue pb-5px mr-20">是否显示小区边界</span><button type="button" class="layui-btn layui-btn-radius layui-btn-normal layui-btn-sm" onclick="openPois(this);" disabled>是 <i class="fa fa-check"></i></button><button type="button" class="layui-btn layui-btn-primary layui-btn-radius layui-btn-sm" onclick="closePois(this);">否</button>`;
+            //document.getElementsByTagName("body")[0].appendChild(container);
+            document.getElementsByClassName('panel')[1].appendChild(container);
+ },5000)
     </script>
 
 

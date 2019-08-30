@@ -12,10 +12,8 @@ const readline = require('readline').createInterface({
   output: process.stdout
 })
 
-readline.question(`What's your region?`, region => {
+readline.question(`ÊäÈëÇøÏØ`, region => {
   oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
-
-
 
 async function run() {
 
@@ -34,7 +32,6 @@ async function run() {
        WHERE village_region = :region`,
       [region],  // bind value for :id
     );
-      console.log(connection);
     result.rows.forEach(function(row){
 	var village_code = row["VILLAGE_CODE"];
 	request(`https://ditu.amap.com/detail/${village_code}/?src=mypage&callnative=0`, function (error, response, body) {
@@ -69,10 +66,7 @@ async function run() {
                     //console.log('apple');
                     //console.log(bounds + ' ' + poiId);
                     //connection.execute(`UPDATE lbs_village SET village_bounds = '${JSON.stringify(path)}' WHERE village_code = '${poiId}'`);
-                    console.log(path);
-                    console.log(poiId);
                     var sql = `begin UPDATE lbs_village SET village_bounds = '${JSON.stringify(path)}' WHERE village_code = '${poiId}';commit;end;`;
-                    console.log(sql);
                     connection.execute(sql, function (err, result) {
                         if (err) {
                             console.error(err.message);

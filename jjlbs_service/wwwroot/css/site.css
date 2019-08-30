@@ -128,9 +128,9 @@
     border-radius: 10px;
     border: 2px solid lightblue;
     background: white;
-    position: fixed;
-    top: 400px;
-    right: 25px;
+    position: absolute;
+    top: -40px;
+    right: 20px;
     padding: 10px;
 }
 
@@ -191,4 +191,15 @@ i.fa{
 
 select::-ms-expand {
     display: none;
+}
+
+#panelLeft {
+    width: 70%!important;
+}
+#panelRight {
+    width: 30%!important;
+}
+
+.w-100p {
+    width: 100% !important;
 }

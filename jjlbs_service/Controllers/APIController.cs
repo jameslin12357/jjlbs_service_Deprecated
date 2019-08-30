@@ -197,26 +197,47 @@ namespace jjlbs_service.Controllers
 
         public string SearchVillage(string text)
         {
-            if (text == null)
+            //if (text == null)
+            //{
+            //    return "404";
+            //}
+            if (text == "")
             {
-                return "404";
+                Oraclehp ohp = new Oraclehp();
+                DataSet data = ohp.Query($"select RAWTOHEX(VILLAGE_ID) as VILLAGE_ID, VILLAGE_NAME, VILLAGE_ADDRESS, VILLAGE_REGION, VILLAGE_TYPE, VILLAGE_LNG, VILLAGE_LAT, VILLAGE_BOUNDS  from LBS_VILLAGE");
+                string json = JsonConvert.SerializeObject(data);
+                return json;
             }
-            Oraclehp ohp = new Oraclehp();
-            DataSet data = ohp.Query($"select RAWTOHEX(VILLAGE_ID) as VILLAGE_ID, VILLAGE_NAME, VILLAGE_ADDRESS, VILLAGE_REGION, VILLAGE_TYPE, VILLAGE_LNG, VILLAGE_LAT, VILLAGE_BOUNDS  from LBS_VILLAGE where VILLAGE_NAME LIKE '%{text}%'");
-            string json = JsonConvert.SerializeObject(data);
-            return json;
+            else
+            {
+                Oraclehp ohp = new Oraclehp();
+                DataSet data = ohp.Query($"select RAWTOHEX(VILLAGE_ID) as VILLAGE_ID, VILLAGE_NAME, VILLAGE_ADDRESS, VILLAGE_REGION, VILLAGE_TYPE, VILLAGE_LNG, VILLAGE_LAT, VILLAGE_BOUNDS  from LBS_VILLAGE where VILLAGE_NAME LIKE '%{text}%'");
+                string json = JsonConvert.SerializeObject(data);
+                return json;
+            }
+        
         }
 
         public string SearchBuilding(string text)
         {
-            if (text == null)
+            //if (text == null)
+            //{
+            //    return "404";
+            //}
+            if (text == "")
             {
-                return "404";
+                Oraclehp ohp = new Oraclehp();
+                DataSet data = ohp.Query($"select RAWTOHEX(BUILDING_ID) as BUILDING_ID, BUILDING_NAME, BUILDING_ADDRESS, LNG, LAT from lbs_building");
+                string json = JsonConvert.SerializeObject(data);
+                return json;
+            }else
+            {
+                Oraclehp ohp = new Oraclehp();
+                DataSet data = ohp.Query($"select RAWTOHEX(BUILDING_ID) as BUILDING_ID, BUILDING_NAME, BUILDING_ADDRESS, LNG, LAT from lbs_building where BUILDING_NAME LIKE '%{text}%'");
+                string json = JsonConvert.SerializeObject(data);
+                return json;
             }
-            Oraclehp ohp = new Oraclehp();
-            DataSet data = ohp.Query($"select RAWTOHEX(BUILDING_ID) as BUILDING_ID, BUILDING_NAME, BUILDING_ADDRESS, LNG, LAT from lbs_building where BUILDING_NAME LIKE '%{text}%'");
-            string json = JsonConvert.SerializeObject(data);
-            return json;
+                
         }
 
         public string DetailsVillage(string id)

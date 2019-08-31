@@ -10,7 +10,7 @@ namespace jjlbs_service.oracle
 {
     public class Oraclehp
     {
-        public string connectionString = "User Id=LBSUSER;Password=LBSPWD;Data Source=10.1.8.17:1521/JJLBS";
+        public string connectionString = "User Id=john;Password=pudong;Data Source=localhost:1521/socialclone";
 
         public DataSet Query(string SQLString)
         {

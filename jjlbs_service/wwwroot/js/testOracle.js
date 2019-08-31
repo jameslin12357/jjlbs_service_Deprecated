@@ -29,10 +29,11 @@ async function run() {
     const result = await connection.execute(
        `SELECT *
        FROM lbs_village
-       WHERE village_region = :region`,
-      [region],  // bind value for :id
+       WHERE village_region like '¿¿¿'`
+        // bind value for :id
     );
-    result.rows.forEach(function(row){
+	  console.log(result);
+/*    result.rows.forEach(function(row){
 	var village_code = row["VILLAGE_CODE"];
 	request(`https://ditu.amap.com/detail/${village_code}/?src=mypage&callnative=0`, function (error, response, body) {
   		    
@@ -80,7 +81,7 @@ async function run() {
                 }
             }
 });
-    });
+    });*/
       //setTimeout(function () {
       //    console.log(bounds);
       //    bounds.forEach(function (bound) {

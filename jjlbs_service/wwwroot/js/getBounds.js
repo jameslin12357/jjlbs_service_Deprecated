@@ -21,9 +21,9 @@ async function run() {
 
   try {
     connection = await oracledb.getConnection(  {
-      user          : "john",
-      password      : "pudong",
-        connectString: "localhost:1521/socialclone"
+      user          : "LBSUSER",
+      password      : "LBSPWD",
+        connectString: "10.1.8.17:1521/JJLBS"
     });
     var bounds = [];
     const result = await connection.execute(

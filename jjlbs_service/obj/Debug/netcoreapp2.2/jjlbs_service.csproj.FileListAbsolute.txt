@@ -182,5 +182,5 @@ C:\Users\Administrator\source\repos\jjlbs_serviceNew\jjlbs_service\obj\Debug\net
 C:\Users\Administrator\source\repos\jjlbs_serviceNew\jjlbs_service\obj\Debug\netcoreapp2.2\jjlbs_service.dll
 C:\Users\Administrator\source\repos\jjlbs_serviceNew\jjlbs_service\obj\Debug\netcoreapp2.2\jjlbs_service.pdb
 C:\Users\Administrator\source\repos\jjlbs_serviceNew\jjlbs_service\obj\Debug\netcoreapp2.2\jjlbs_service.csproj.CopyComplete
-C:\Users\Administrator\source\repos\jjlbs_serviceNew\jjlbs_service\obj\Debug\netcoreapp2.2\jjlbs_service.csprojAssemblyReference.cache
 C:\Users\mac\Desktop\jjlbs_serviceNew\jjlbs_service\obj\Debug\netcoreapp2.2\jjlbs_service.csprojAssemblyReference.cache
+C:\Users\Administrator\source\repos\jjlbs_serviceNew\jjlbs_service\obj\Debug\netcoreapp2.2\jjlbs_service.csprojAssemblyReference.cache

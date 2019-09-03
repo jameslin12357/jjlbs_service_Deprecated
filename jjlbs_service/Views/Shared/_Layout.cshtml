@@ -312,9 +312,9 @@ function myLoop () {           //  create a loop function
        if (currentP <= 100) {            //  if the counter < 10, call the loop function
            myLoop();             //  ..  again which will trigger another 
        } else {
-           document.getElementById('pb').remove(); layer.msg("小区已更新");
+           document.getElementById('pb').remove(); layer.msg("楼宇已更新");
        }//  ..  setTimeout()
-   }, 1500)
+   }, 1000)
 }
 
 myLoop();    
@@ -494,7 +494,7 @@ function myLoop () {           //  create a loop function
        } else {
            document.getElementById('pb').remove(); layer.msg("小区已更新");
        }//  ..  setTimeout()
-   }, 1500)
+   }, 1000)
 }
 
 myLoop();    
@@ -852,12 +852,14 @@ myLoop();
                 div.innerHTML += `<p class="mb-5">请输入边界</p>`;
                         e.appendChild(div);
             } else {
-                        var inputs = e.getElementsByTagName('input');
+                var inputs = e.getElementsByTagName('input');
             var selects = e.getElementsByTagName('select');
             var village_name = inputs[0].value;
-            var village_address = inputs[1].value;
-            var village_region = selects[0].value;
-            var village_type = selects[1].value;
+                var village_address = inputs[1].value;
+                var village_region = $('#selectProvinceD').find(":selected").text() + $('#selectCityD').find(":selected").text() + $('#selectCountyD').find(":selected").text();
+                console.log(village_region);
+
+            var village_type = selects[3].value;
             var village_bounds = document.getElementById('fieldHidden').value;
             var village_x = String(JSON.parse(document.getElementById('fieldHidden').value)[0][0]);
             var village_y = String(JSON.parse(document.getElementById('fieldHidden').value)[0][1]);
@@ -914,6 +916,26 @@ myLoop();
             var selectProvince = selectFilter.children[0];
             var selectCity = selectFilter.children[1];
             var selectCounty = selectFilter.children[2];
+
+            var selectedProvince = $('#selectProvince').find(":selected").text();
+                        var selectedCity = $('#selectCity').find(":selected").text();
+                        var selectedCounty = $('#selectCounty').find(":selected").text();
+            var selectProvinceD = `<select id="selectProvinceD" name="province" class="selectPCC" required>`;
+            var optionsProvince = selectProvince.innerHTML;
+            var index = optionsProvince.match(selectedProvince)["index"];
+            var optionsProvinceF = optionsProvince.slice(0, index - 1) + "selected" + optionsProvince.slice(index - 1);
+            selectProvinceD += optionsProvinceF + `</select>`;
+
+              var selectCityD = `<select id="selectCityD" name="city" class="selectPCC" required>`;
+            var optionsCity = selectCity.innerHTML;
+            var index = optionsCity.match(selectedCity)["index"];
+            var optionsCityF = optionsCity.slice(0, index - 1) + "selected" + optionsCity.slice(index - 1);
+            selectCityD += optionsCityF + `</select>`;
+              var selectCountyD = `<select id="selectCountyD" name="county" class="selectPCC" required>`;
+            var optionsCounty = selectCounty.innerHTML;
+            var index = optionsCounty.match(selectedCounty)["index"];
+            var optionsCountyF = optionsCounty.slice(0, index - 1) + "selected" + optionsCounty.slice(index - 1);
+            selectCountyD += optionsCountyF + `</select>`;
             //var textoptionProvince = $('#selectProvince').find(":selected").text();
             //var valoptionProvince = $('#selectProvince').find(":selected").val();
             //var textoptionCity = $('#selectCity').find(":selected").text();
@@ -922,6 +944,7 @@ myLoop();
             //var valoptionCounty = $('#selectCounty').find(":selected").val();
             layer.open({
                 btn: [],
+                maxWidth: 750,
   //               yes: function(index, layero){
   //  //按钮【按钮一】的回调
   //                   document.getElementsByTagName('form')[0].submit();
@@ -931,15 +954,20 @@ myLoop();
                 content: `<form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();addVillage(this);">
                    <div class="layui-form-item">
                     <label class="layui-form-label">小区名称</label>
-                    <div class="layui-input-inline">
+                <div class="layui-input-block">
+
                       <input type="text" name="village_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" required>
-                    </div>
+                  
+</div>
                   </div>
                   <div class="layui-form-item">
                     <label class="layui-form-label">详细地址</label>
-                    <div class="layui-input-inline">
+                <div class="layui-input-block">
+
+                   
                       <input type="text" name="village_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input"  required>
-                    </div>
+                   
+  </div>
                   </div>
                   <!--<div class="layui-form-item">
                     <label class="layui-form-label">区域</label>
@@ -975,7 +1003,7 @@ myLoop();
               </div>-->`+`  
   <div class="layui-form-item">
     <label class="layui-form-label">区域</label>
-    <div class="layui-input-inline"><select id="selectProvince" class="selectPCC">` + selectProvince.innerHTML + `</select></div><div class="layui-input-inline"><select id="selectCity" class="selectPCC">` + selectCity.innerHTML + `</select></div><div class="layui-input-inline"><select id="selectCounty" class="selectPCC">` + selectCounty.innerHTML +
+    <div class="layui-input-inline">` + selectProvinceD + `</div><div class="layui-input-inline">` + selectCityD + `</div><div class="layui-input-inline">` + selectCountyD +
 `</select></div></div><div class="layui-form-item">
                 <label class="layui-form-label">类型</label>
                 <div class="layui-input-block">
@@ -1125,8 +1153,8 @@ myLoop();
             var building_number = inputs[0].value;
             var building_name = inputs[1].value;
             var building_address = inputs[2].value;
-            var building_region = selects[0].value;
-            var building_type = selects[1].value;
+            var building_region = $('#selectProvinceD').find(":selected").text() + $('#selectCityD').find(":selected").text() + $('#selectCountyD').find(":selected").text();
+            var building_type = selects[3].value;
             //var building_bounds = document.getElementById('fieldHidden').value;
             //var building_x = String(JSON.parse(document.getElementById('fieldHidden').value)[0][0]);
             //var building_y = String(JSON.parse(document.getElementById('fieldHidden').value)[0][1]);
@@ -1179,8 +1207,33 @@ myLoop();
                 document.getElementsByClassName("modalSmall")[i].remove();
             }
             mousetool.close(true);
+                    var selectFilter = document.getElementById('selectFilter');
+            var selectProvince = selectFilter.children[0];
+            var selectCity = selectFilter.children[1];
+            var selectCounty = selectFilter.children[2];
+
+            var selectedProvince = $('#selectProvince').find(":selected").text();
+                        var selectedCity = $('#selectCity').find(":selected").text();
+                        var selectedCounty = $('#selectCounty').find(":selected").text();
+            var selectProvinceD = `<select id="selectProvinceD" name="province" class="selectPCC" required>`;
+            var optionsProvince = selectProvince.innerHTML;
+            var index = optionsProvince.match(selectedProvince)["index"];
+            var optionsProvinceF = optionsProvince.slice(0, index - 1) + "selected" + optionsProvince.slice(index - 1);
+            selectProvinceD += optionsProvinceF + `</select>`;
+
+              var selectCityD = `<select id="selectCityD" name="city" class="selectPCC" required>`;
+            var optionsCity = selectCity.innerHTML;
+            var index = optionsCity.match(selectedCity)["index"];
+            var optionsCityF = optionsCity.slice(0, index - 1) + "selected" + optionsCity.slice(index - 1);
+            selectCityD += optionsCityF + `</select>`;
+              var selectCountyD = `<select id="selectCountyD" name="county" class="selectPCC" required>`;
+            var optionsCounty = selectCounty.innerHTML;
+            var index = optionsCounty.match(selectedCounty)["index"];
+            var optionsCountyF = optionsCounty.slice(0, index - 1) + "selected" + optionsCounty.slice(index - 1);
+            selectCountyD += optionsCountyF + `</select>`;
               layer.open({
-                btn: [],
+                  btn: [],
+                  maxWidth: 750,
   //               yes: function(index, layero){
   //  //按钮【按钮一】的回调
   //                   document.getElementsByTagName('form')[0].submit();
@@ -1190,41 +1243,26 @@ myLoop();
                 content: `<form class="layui-form layui-form-pane" action="" onsubmit="event.preventDefault();addBuilding(this);">
                    <div class="layui-form-item">
                     <label class="layui-form-label">楼宇号码</label>
-                    <div class="layui-input-inline">
+                <div class="layui-input-block">
                       <input type="text" name="building_number" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" required>
                     </div>
                   </div>
               <div class="layui-form-item">
                     <label class="layui-form-label">楼宇名称</label>
-                    <div class="layui-input-inline">
+                <div class="layui-input-block">
                       <input type="text" name="building_name" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" required>
                     </div>
                   </div>
                   <div class="layui-form-item">
                     <label class="layui-form-label">详细地址</label>
-                    <div class="layui-input-inline">
+                <div class="layui-input-block">
                       <input type="text" name="building_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" required>
                     </div>
                   </div>
-              <div class="layui-form-item">
-                <label class="layui-form-label">区域</label>
-                <div class="layui-input-block">
-                  <select name="region" lay-filter="aihao" required>
-                            <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
-                            <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
-                            <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
-                            <option value="内蒙古自治区/赤峰市/阿鲁科尔沁旗">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
-                            <option value="内蒙古自治区/赤峰市/巴林左旗">内蒙古自治区/赤峰市/巴林左旗</option>
-                            <option value="内蒙古自治区/赤峰市/巴林右旗">内蒙古自治区/赤峰市/巴林右旗</option>
-                            <option value="内蒙古自治区/赤峰市/林西县">内蒙古自治区/赤峰市/林西县</option>
-                            <option value="内蒙古自治区/赤峰市/克什克腾旗">内蒙古自治区/赤峰市/克什克腾旗</option>
-                            <option value="内蒙古自治区/赤峰市/翁牛特旗">内蒙古自治区/赤峰市/翁牛特旗</option>
-                            <option value="内蒙古自治区/赤峰市/喀喇沁旗">内蒙古自治区/赤峰市/喀喇沁旗</option>
-                            <option value="内蒙古自治区/赤峰市/宁城县">内蒙古自治区/赤峰市/宁城县</option>
-                            <option value="内蒙古自治区/赤峰市/敖汉旗">内蒙古自治区/赤峰市/敖汉旗</option>
-                  </select>
-                </div>
-              </div>
+       <div class="layui-form-item">
+    <label class="layui-form-label">区域</label>
+    <div class="layui-input-inline">` + selectProvinceD + `</div><div class="layui-input-inline">` + selectCityD + `</div><div class="layui-input-inline">` + selectCountyD +
+`</select></div></div>
 
 <div class="layui-form-item">
                 <label class="layui-form-label">类型</label>
@@ -1747,7 +1785,8 @@ myLoop();
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (data) {
-                        if (data["ds"][0]["VILLAGE_BOUNDS"] === "null") {
+                        if (data["ds"][0]["VILLAGE_BOUNDS"] === null) {
+                            
                             layer.open({
                 btn: [],
   //               yes: function(index, layero){
@@ -1785,20 +1824,9 @@ myLoop();
               <div class="layui-form-item">
                 <label class="layui-form-label">区域</label>
                 <div class="layui-input-block">
-                  <select name="region" lay-filter="aihao"  required id="selectRegionForm">
-                            <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
-                            <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
-                            <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
-                            <option value="内蒙古自治区/赤峰市/阿鲁科尔沁旗">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
-                            <option value="内蒙古自治区/赤峰市/巴林左旗">内蒙古自治区/赤峰市/巴林左旗</option>
-                            <option value="内蒙古自治区/赤峰市/巴林右旗">内蒙古自治区/赤峰市/巴林右旗</option>
-                            <option value="内蒙古自治区/赤峰市/林西县">内蒙古自治区/赤峰市/林西县</option>
-                            <option value="内蒙古自治区/赤峰市/克什克腾旗">内蒙古自治区/赤峰市/克什克腾旗</option>
-                            <option value="内蒙古自治区/赤峰市/翁牛特旗">内蒙古自治区/赤峰市/翁牛特旗</option>
-                            <option value="内蒙古自治区/赤峰市/喀喇沁旗">内蒙古自治区/赤峰市/喀喇沁旗</option>
-                            <option value="内蒙古自治区/赤峰市/宁城县">内蒙古自治区/赤峰市/宁城县</option>
-                            <option value="内蒙古自治区/赤峰市/敖汉旗">内蒙古自治区/赤峰市/敖汉旗</option>
-                  </select>
+                  <select name="region" required>
+                            <option value="` + data["ds"][0]["VILLAGE_REGION"] + `">` + data["ds"][0]["VILLAGE_REGION"] + `
+                  </option></select>
                 </div>
               </div>
 
@@ -1920,33 +1948,33 @@ myLoop();
 
 //</form>`;
                             //document.getElementsByTagName("body")[0].appendChild(container);
-                            var village_region = data["ds"][0]["VILLAGE_REGION"];
-                            var selectRegionForm = document.getElementById('selectRegionForm');
-                            if (village_region === '内蒙古自治区/赤峰市/红山区') {
-                                selectRegionForm.children[0].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/元宝山区') {
-                                selectRegionForm.children[1].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/松山区') {
-                                selectRegionForm.children[2].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/阿鲁科尔沁旗') {
-                                selectRegionForm.children[3].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/巴林左旗') {
-                                selectRegionForm.children[4].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/巴林右旗') {
-                                selectRegionForm.children[5].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/林西县') {
-                                selectRegionForm.children[6].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/克什克腾旗') {
-                                selectRegionForm.children[7].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/翁牛特旗') {
-                                selectRegionForm.children[8].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/喀喇沁旗') {
-                                selectRegionForm.children[9].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/宁城县') {
-                                selectRegionForm.children[10].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/敖汉旗') {
-                                selectRegionForm.children[11].setAttribute("selected", true);
-                            }
+                            //var village_region = data["ds"][0]["VILLAGE_REGION"];
+                            //var selectRegionForm = document.getElementById('selectRegionForm');
+                            //if (village_region === '内蒙古自治区/赤峰市/红山区') {
+                            //    selectRegionForm.children[0].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/元宝山区') {
+                            //    selectRegionForm.children[1].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/松山区') {
+                            //    selectRegionForm.children[2].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/阿鲁科尔沁旗') {
+                            //    selectRegionForm.children[3].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/巴林左旗') {
+                            //    selectRegionForm.children[4].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/巴林右旗') {
+                            //    selectRegionForm.children[5].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/林西县') {
+                            //    selectRegionForm.children[6].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/克什克腾旗') {
+                            //    selectRegionForm.children[7].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/翁牛特旗') {
+                            //    selectRegionForm.children[8].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/喀喇沁旗') {
+                            //    selectRegionForm.children[9].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/宁城县') {
+                            //    selectRegionForm.children[10].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/敖汉旗') {
+                            //    selectRegionForm.children[11].setAttribute("selected", true);
+                            //}
                             form.render();
                             form.on('switch(switchT)', function (d) {
                                 if (d.elem.checked) {
@@ -2000,21 +2028,10 @@ myLoop();
 
               <div class="layui-form-item">
                 <label class="layui-form-label">区域</label>
-                <div class="layui-input-block">
-                  <select name="region" lay-filter="aihao"  required id="selectRegionForm">
-                            <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
-                            <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
-                            <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
-                            <option value="内蒙古自治区/赤峰市/阿鲁科尔沁旗">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
-                            <option value="内蒙古自治区/赤峰市/巴林左旗">内蒙古自治区/赤峰市/巴林左旗</option>
-                            <option value="内蒙古自治区/赤峰市/巴林右旗">内蒙古自治区/赤峰市/巴林右旗</option>
-                            <option value="内蒙古自治区/赤峰市/林西县">内蒙古自治区/赤峰市/林西县</option>
-                            <option value="内蒙古自治区/赤峰市/克什克腾旗">内蒙古自治区/赤峰市/克什克腾旗</option>
-                            <option value="内蒙古自治区/赤峰市/翁牛特旗">内蒙古自治区/赤峰市/翁牛特旗</option>
-                            <option value="内蒙古自治区/赤峰市/喀喇沁旗">内蒙古自治区/赤峰市/喀喇沁旗</option>
-                            <option value="内蒙古自治区/赤峰市/宁城县">内蒙古自治区/赤峰市/宁城县</option>
-                            <option value="内蒙古自治区/赤峰市/敖汉旗">内蒙古自治区/赤峰市/敖汉旗</option>
-                  </select>
+              <div class="layui-input-block">
+                  <select name="region" required>
+                            <option value="` + data["ds"][0]["VILLAGE_REGION"] + `">` + data["ds"][0]["VILLAGE_REGION"] + `
+                  </option></select>
                 </div>
               </div>
 
@@ -2130,33 +2147,33 @@ myLoop();
 
 //</form>`;
 //                            document.getElementsByTagName("body")[0].appendChild(container);
-                            var village_region = data["ds"][0]["VILLAGE_REGION"];
-                            var selectRegionForm = document.getElementById('selectRegionForm');
-                            if (village_region === '内蒙古自治区/赤峰市/红山区') {
-                                selectRegionForm.children[0].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/元宝山区') {
-                                selectRegionForm.children[1].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/松山区') {
-                                selectRegionForm.children[2].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/阿鲁科尔沁旗') {
-                                selectRegionForm.children[3].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/巴林左旗') {
-                                selectRegionForm.children[4].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/巴林右旗') {
-                                selectRegionForm.children[5].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/林西县') {
-                                selectRegionForm.children[6].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/克什克腾旗') {
-                                selectRegionForm.children[7].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/翁牛特旗') {
-                                selectRegionForm.children[8].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/喀喇沁旗') {
-                                selectRegionForm.children[9].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/宁城县') {
-                                selectRegionForm.children[10].setAttribute("selected", true);
-                            } else if (village_region === '内蒙古自治区/赤峰市/敖汉旗') {
-                                selectRegionForm.children[11].setAttribute("selected", true);
-                            }
+                            //var village_region = data["ds"][0]["VILLAGE_REGION"];
+                            //var selectRegionForm = document.getElementById('selectRegionForm');
+                            //if (village_region === '内蒙古自治区/赤峰市/红山区') {
+                            //    selectRegionForm.children[0].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/元宝山区') {
+                            //    selectRegionForm.children[1].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/松山区') {
+                            //    selectRegionForm.children[2].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/阿鲁科尔沁旗') {
+                            //    selectRegionForm.children[3].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/巴林左旗') {
+                            //    selectRegionForm.children[4].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/巴林右旗') {
+                            //    selectRegionForm.children[5].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/林西县') {
+                            //    selectRegionForm.children[6].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/克什克腾旗') {
+                            //    selectRegionForm.children[7].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/翁牛特旗') {
+                            //    selectRegionForm.children[8].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/喀喇沁旗') {
+                            //    selectRegionForm.children[9].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/宁城县') {
+                            //    selectRegionForm.children[10].setAttribute("selected", true);
+                            //} else if (village_region === '内蒙古自治区/赤峰市/敖汉旗') {
+                            //    selectRegionForm.children[11].setAttribute("selected", true);
+                            //}
                             form.render();
                             form.on('switch(switchT)', function (d) {
                                 if (d.elem.checked) {
@@ -2222,23 +2239,12 @@ myLoop();
                       <input type="text" name="building_address" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" value="${data["ds"][0]["BUILDING_ADDRESS"]}" required>
                     </div>
                   </div>
-              <div class="layui-form-item">
+                <div class="layui-form-item">
                 <label class="layui-form-label">区域</label>
                 <div class="layui-input-block">
-                  <select name="region" lay-filter="aihao" id="selectRegionForm" required>
-                            <option value="内蒙古自治区/赤峰市/红山区">内蒙古自治区/赤峰市/红山区</option>
-                            <option value="内蒙古自治区/赤峰市/元宝山区">内蒙古自治区/赤峰市/元宝山区</option>
-                            <option value="内蒙古自治区/赤峰市/松山区">内蒙古自治区/赤峰市/松山区</option>
-                            <option value="内蒙古自治区/赤峰市/阿鲁科尔沁旗">内蒙古自治区/赤峰市/阿鲁科尔沁旗</option>
-                            <option value="内蒙古自治区/赤峰市/巴林左旗">内蒙古自治区/赤峰市/巴林左旗</option>
-                            <option value="内蒙古自治区/赤峰市/巴林右旗">内蒙古自治区/赤峰市/巴林右旗</option>
-                            <option value="内蒙古自治区/赤峰市/林西县">内蒙古自治区/赤峰市/林西县</option>
-                            <option value="内蒙古自治区/赤峰市/克什克腾旗">内蒙古自治区/赤峰市/克什克腾旗</option>
-                            <option value="内蒙古自治区/赤峰市/翁牛特旗">内蒙古自治区/赤峰市/翁牛特旗</option>
-                            <option value="内蒙古自治区/赤峰市/喀喇沁旗">内蒙古自治区/赤峰市/喀喇沁旗</option>
-                            <option value="内蒙古自治区/赤峰市/宁城县">内蒙古自治区/赤峰市/宁城县</option>
-                            <option value="内蒙古自治区/赤峰市/敖汉旗">内蒙古自治区/赤峰市/敖汉旗</option>
-                  </select>
+                  <select name="region" required>
+                            <option value="` + data["ds"][0]["REGION"] + `">` + data["ds"][0]["REGION"] + `
+                  </option></select>
                 </div>
               </div>
 
@@ -2319,33 +2325,33 @@ myLoop();
 //</form>`;
 //                        //htmlPoiDetail = `<div class="modalSmall"><div class="flex"><span>小区信息</span><button>x</button></div><div><span>小区名称</span><span>${data["ds"][0]["VILLAGE_NAME"]}</span></div><div><span>详细地址</span><span>${data["ds"][0]["VILLAGE_ADDRESS"]}</span></div><div><span>区域</span><span>${data["ds"][0]["VILLAGE_REGION"]}</span></div><div><span>类型</span><span>${data["ds"][0]["VILLAGE_TYPE"]}</span></div></div>`;
 //                        document.getElementsByTagName("body")[0].appendChild(container);
-                        var building_region = data["ds"][0]["REGION"];
-                        var selectRegionForm = document.getElementById('selectRegionForm');
-                        if (building_region === '内蒙古自治区/赤峰市/红山区') {
-                            selectRegionForm.children[0].setAttribute("selected", true);
-                        } else if (building_region === '内蒙古自治区/赤峰市/元宝山区') {
-                            selectRegionForm.children[1].setAttribute("selected", true);
-                        } else if (building_region === '内蒙古自治区/赤峰市/松山区') {
-                            selectRegionForm.children[2].setAttribute("selected", true);
-                        } else if (building_region === '内蒙古自治区/赤峰市/阿鲁科尔沁旗') {
-                            selectRegionForm.children[3].setAttribute("selected", true);
-                        } else if (building_region === '内蒙古自治区/赤峰市/巴林左旗') {
-                            selectRegionForm.children[4].setAttribute("selected", true);
-                        } else if (building_region === '内蒙古自治区/赤峰市/巴林右旗') {
-                            selectRegionForm.children[5].setAttribute("selected", true);
-                        } else if (building_region === '内蒙古自治区/赤峰市/林西县') {
-                            selectRegionForm.children[6].setAttribute("selected", true);
-                        } else if (building_region === '内蒙古自治区/赤峰市/克什克腾旗') {
-                            selectRegionForm.children[7].setAttribute("selected", true);
-                        } else if (building_region === '内蒙古自治区/赤峰市/翁牛特旗') {
-                            selectRegionForm.children[8].setAttribute("selected", true);
-                        } else if (building_region === '内蒙古自治区/赤峰市/喀喇沁旗') {
-                            selectRegionForm.children[9].setAttribute("selected", true);
-                        } else if (building_region === '内蒙古自治区/赤峰市/宁城县') {
-                            selectRegionForm.children[10].setAttribute("selected", true);
-                        } else if (building_region === '内蒙古自治区/赤峰市/敖汉旗') {
-                            selectRegionForm.children[11].setAttribute("selected", true);
-                        }
+                        //var building_region = data["ds"][0]["REGION"];
+                        //var selectRegionForm = document.getElementById('selectRegionForm');
+                        //if (building_region === '内蒙古自治区/赤峰市/红山区') {
+                        //    selectRegionForm.children[0].setAttribute("selected", true);
+                        //} else if (building_region === '内蒙古自治区/赤峰市/元宝山区') {
+                        //    selectRegionForm.children[1].setAttribute("selected", true);
+                        //} else if (building_region === '内蒙古自治区/赤峰市/松山区') {
+                        //    selectRegionForm.children[2].setAttribute("selected", true);
+                        //} else if (building_region === '内蒙古自治区/赤峰市/阿鲁科尔沁旗') {
+                        //    selectRegionForm.children[3].setAttribute("selected", true);
+                        //} else if (building_region === '内蒙古自治区/赤峰市/巴林左旗') {
+                        //    selectRegionForm.children[4].setAttribute("selected", true);
+                        //} else if (building_region === '内蒙古自治区/赤峰市/巴林右旗') {
+                        //    selectRegionForm.children[5].setAttribute("selected", true);
+                        //} else if (building_region === '内蒙古自治区/赤峰市/林西县') {
+                        //    selectRegionForm.children[6].setAttribute("selected", true);
+                        //} else if (building_region === '内蒙古自治区/赤峰市/克什克腾旗') {
+                        //    selectRegionForm.children[7].setAttribute("selected", true);
+                        //} else if (building_region === '内蒙古自治区/赤峰市/翁牛特旗') {
+                        //    selectRegionForm.children[8].setAttribute("selected", true);
+                        //} else if (building_region === '内蒙古自治区/赤峰市/喀喇沁旗') {
+                        //    selectRegionForm.children[9].setAttribute("selected", true);
+                        //} else if (building_region === '内蒙古自治区/赤峰市/宁城县') {
+                        //    selectRegionForm.children[10].setAttribute("selected", true);
+                        //} else if (building_region === '内蒙古自治区/赤峰市/敖汉旗') {
+                        //    selectRegionForm.children[11].setAttribute("selected", true);
+                        //}
                         form.render();
                         //form.on('switch(switch1)', function (data) {
                         //    console.log(polygon);

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="UTF-8">
@@ -25,12 +25,14 @@
 				<th field="inv" width="80">Inv No</th>
 				<th field="date" width="100">Date</th>
 				<th field="name" width="80">Name</th>
-				<th field="amount" width="80" align="right">Amount</th>
+				<th field="amountssss" width="80" align="right">Amount</th>
 				<th field="price" width="80" align="right">Price</th>
 				<th field="cost" width="100" align="right">Cost</th>
 				<th field="note" width="110">Note</th>
 			</tr>
 		</thead>
+
+        <button id="test">test</button>
 	</table>
 	<script>
 		(function($){
@@ -81,6 +83,7 @@
 					return jq.each(function(){
 						var dg = $(this);
                         var state = dg.data('datagrid');
+                        console.log(state);
                         var opts = state.options;
                         opts.loadFilter = pagerFilter;
                         var onBeforeLoad = opts.onBeforeLoad;
@@ -150,11 +153,36 @@
 				});
 			}
 			return rows;
+        }
+
+        function getData2(){
+			var rows = [];
+			for(var i=1; i<=800; i++){
+				var amount = Math.floor(Math.random()*22000);
+				var price = Math.floor(Math.random()*22000);
+				rows.push({
+					inv: 'Inv No '+i,
+					date: $.fn.datebox.defaults.formatter(new Date()),
+					name: 'Name '+i,
+					amountssss: amount,
+					price: price,
+					cost: amount*price,
+					note: 'Note '+i
+				});
+			}
+			return rows;
 		}
 		
 		$(function(){
-			$('#dg').datagrid({data:getData()}).datagrid('clientPaging');
-		});
+            $('#dg').datagrid({ data: getData() }).datagrid('clientPaging');
+
+
+        });
+
+        document.getElementById('test').addEventListener('click', function (e) {
+            $('#dg').datagrid('loadData',getData2());
+
+        })
 	</script>
 </body>
 </html>

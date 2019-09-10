@@ -142,106 +142,106 @@
             });
         });
 
-        (function ($) {
-            function pagerFilter(data) {
-                if ($.isArray(data)) {	// is array
-                    data = {
-                        total: data.length,
-                        rows: data
-                    }
-                }
-                var target = this;
-                var dg = $(target);
-                var state = dg.data('datagrid');
-                var opts = dg.datagrid('options');
-                if (!state.allRows) {
-                    state.allRows = (data.rows);
-                }
-                if (!opts.remoteSort && opts.sortName) {
-                    var names = opts.sortName.split(',');
-                    var orders = opts.sortOrder.split(',');
-                    state.allRows.sort(function (r1, r2) {
-                        var r = 0;
-                        for (var i = 0; i < names.length; i++) {
-                            var sn = names[i];
-                            var so = orders[i];
-                            var col = $(target).datagrid('getColumnOption', sn);
-                            var sortFunc = col.sorter || function (a, b) {
-                                return a == b ? 0 : (a > b ? 1 : -1);
-                            };
-                            r = sortFunc(r1[sn], r2[sn]) * (so == 'asc' ? 1 : -1);
-                            if (r != 0) {
-                                return r;
-                            }
-                        }
-                        return r;
-                    });
-                }
-                var start = (opts.pageNumber - 1) * parseInt(opts.pageSize);
-                var end = start + parseInt(opts.pageSize);
-                data.rows = state.allRows.slice(start, end);
-                return data;
-            }
+        //(function ($) {
+        //    function pagerFilter(data) {
+        //        if ($.isArray(data)) {	// is array
+        //            data = {
+        //                total: data.length,
+        //                rows: data
+        //            }
+        //        }
+        //        var target = this;
+        //        var dg = $(target);
+        //        var state = dg.data('datagrid');
+        //        var opts = dg.datagrid('options');
+        //        if (!state.allRows) {
+        //            state.allRows = (data.rows);
+        //        }
+        //        if (!opts.remoteSort && opts.sortName) {
+        //            var names = opts.sortName.split(',');
+        //            var orders = opts.sortOrder.split(',');
+        //            state.allRows.sort(function (r1, r2) {
+        //                var r = 0;
+        //                for (var i = 0; i < names.length; i++) {
+        //                    var sn = names[i];
+        //                    var so = orders[i];
+        //                    var col = $(target).datagrid('getColumnOption', sn);
+        //                    var sortFunc = col.sorter || function (a, b) {
+        //                        return a == b ? 0 : (a > b ? 1 : -1);
+        //                    };
+        //                    r = sortFunc(r1[sn], r2[sn]) * (so == 'asc' ? 1 : -1);
+        //                    if (r != 0) {
+        //                        return r;
+        //                    }
+        //                }
+        //                return r;
+        //            });
+        //        }
+        //        var start = (opts.pageNumber - 1) * parseInt(opts.pageSize);
+        //        var end = start + parseInt(opts.pageSize);
+        //        data.rows = state.allRows.slice(start, end);
+        //        return data;
+        //    }
 
-            var loadDataMethod = $.fn.datagrid.methods.loadData;
-            var deleteRowMethod = $.fn.datagrid.methods.deleteRow;
-            $.extend($.fn.datagrid.methods, {
-                clientPaging: function (jq) {
-                    return jq.each(function () {
-                        var dg = $(this);
-                        var state = dg.data('datagrid');
-                        var opts = state.options;
-                        opts.loadFilter = pagerFilter;
-                        var onBeforeLoad = opts.onBeforeLoad;
-                        opts.onBeforeLoad = function (param) {
-                            state.allRows = null;
-                            return onBeforeLoad.call(this, param);
-                        }
-                        var pager = dg.datagrid('getPager');
-                        pager.pagination({
-                            onSelectPage: function (pageNum, pageSize) {
-                                opts.pageNumber = pageNum;
-                                opts.pageSize = pageSize;
-                                pager.pagination('refresh', {
-                                    pageNumber: pageNum,
-                                    pageSize: pageSize
-                                });
-                                dg.datagrid('loadData', state.allRows);
-                            }
-                        });
-                        $(this).datagrid('loadData', state.data);
-                        if (opts.url) {
-                            $(this).datagrid('reload');
-                        }
-                    });
-                },
-                loadData: function (jq, data) {
-                    jq.each(function () {
-                        $(this).data('datagrid').allRows = null;
-                    });
-                    return loadDataMethod.call($.fn.datagrid.methods, jq, data);
-                },
-                deleteRow: function (jq, index) {
-                    return jq.each(function () {
-                        var row = $(this).datagrid('getRows')[index];
-                        deleteRowMethod.call($.fn.datagrid.methods, $(this), index);
-                        var state = $(this).data('datagrid');
-                        if (state.options.loadFilter == pagerFilter) {
-                            for (var i = 0; i < state.allRows.length; i++) {
-                                if (state.allRows[i] == row) {
-                                    state.allRows.splice(i, 1);
-                                    break;
-                                }
-                            }
-                            $(this).datagrid('loadData', state.allRows);
-                        }
-                    });
-                },
-                getAllRows: function (jq) {
-                    return jq.data('datagrid').allRows;
-                }
-            })
-        })(jQuery);
+        //    var loadDataMethod = $.fn.datagrid.methods.loadData;
+        //    var deleteRowMethod = $.fn.datagrid.methods.deleteRow;
+        //    $.extend($.fn.datagrid.methods, {
+        //        clientPaging: function (jq) {
+        //            return jq.each(function () {
+        //                var dg = $(this);
+        //                var state = dg.data('datagrid');
+        //                var opts = state.options;
+        //                opts.loadFilter = pagerFilter;
+        //                var onBeforeLoad = opts.onBeforeLoad;
+        //                opts.onBeforeLoad = function (param) {
+        //                    state.allRows = null;
+        //                    return onBeforeLoad.call(this, param);
+        //                }
+        //                var pager = dg.datagrid('getPager');
+        //                pager.pagination({
+        //                    onSelectPage: function (pageNum, pageSize) {
+        //                        opts.pageNumber = pageNum;
+        //                        opts.pageSize = pageSize;
+        //                        pager.pagination('refresh', {
+        //                            pageNumber: pageNum,
+        //                            pageSize: pageSize
+        //                        });
+        //                        dg.datagrid('loadData', state.allRows);
+        //                    }
+        //                });
+        //                $(this).datagrid('loadData', state.data);
+        //                if (opts.url) {
+        //                    $(this).datagrid('reload');
+        //                }
+        //            });
+        //        },
+        //        loadData: function (jq, data) {
+        //            jq.each(function () {
+        //                $(this).data('datagrid').allRows = null;
+        //            });
+        //            return loadDataMethod.call($.fn.datagrid.methods, jq, data);
+        //        },
+        //        deleteRow: function (jq, index) {
+        //            return jq.each(function () {
+        //                var row = $(this).datagrid('getRows')[index];
+        //                deleteRowMethod.call($.fn.datagrid.methods, $(this), index);
+        //                var state = $(this).data('datagrid');
+        //                if (state.options.loadFilter == pagerFilter) {
+        //                    for (var i = 0; i < state.allRows.length; i++) {
+        //                        if (state.allRows[i] == row) {
+        //                            state.allRows.splice(i, 1);
+        //                            break;
+        //                        }
+        //                    }
+        //                    $(this).datagrid('loadData', state.allRows);
+        //                }
+        //            });
+        //        },
+        //        getAllRows: function (jq) {
+        //            return jq.data('datagrid').allRows;
+        //        }
+        //    })
+        //})(jQuery);
 
         function getData(dt) {
             return dt;
@@ -2918,88 +2918,96 @@ myLoop();
                         });
                         // get data for current city and display on map
                         var city = $("#selectCity").find("option:selected").text();
-                        $.ajax({
-                            type: "get",
+                        $("#dg").datagrid({
                             url: `./api/IndexByCity?city=${city}`,
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
-                            success: function (data) {
-                                map.clearMap();
-                                $.ajax({
-                                type: "get",
-                                url: `https://restapi.amap.com/v3/geocode/geo?key=c7aeb11746b35a92b7b6eee3178a05e4&address=${city}&city=`,
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json",
-                            success: function (data) {
-                                var lnglat = data["geocodes"][0]["location"];
-                                lng = Number(lnglat.split(",")[0]);
-                                lat = Number(lnglat.split(",")[1]);
-                                map.setCenter([lng, lat]);
-                                map.setZoom(17);
-
-                            },
-                            error: function () {
-                                console.log('error');
-                            }
-                                });
-                                        var xq = data[0]["ds"];
-                                var l = data[1]["ds"];
-                                var lFirst = data[2]["ds"];
-                                var rowsXQ = [];
-                                var rowsL = [];
-                                xq.forEach(function (XQ) {
-                                    if (XQ["VILLAGE_BOUNDS"] !== "null") {
-                                        var polygon = new AMap.Polygon({
-                                            strokeColor: "#2828FF",
-                                            fillOpacity: 0,
-                                            bubble: true,
-                                            strokeWeight: 1,
-                                            path: JSON.parse(XQ["VILLAGE_BOUNDS"]),
-                                            map: map
-                                        });
-
-                                        var polylineEditor = new AMap.PolyEditor(map, polygon);
-                                        polygon.setExtData({ "editor": polylineEditor });
-
-
-                                    }
-                                    var hasBounds = "无";
-                            if (XQ["VILLAGE_BOUNDS"] !== null) {
-                                hasBounds = "有";
-                            }
-                                    rowsXQ.push({ village_name: XQ["VILLAGE_NAME"], village_address: XQ["VILLAGE_ADDRESS"], village_region: XQ["VILLAGE_REGION"], village_type: XQ["VILLAGE_TYPE"], village_count: XQ["VILLAGE_COUNT"],village_hasBounds: hasBounds,village_action: `<i class="fa fa-eye mr-5" data-lng="${XQ["VILLAGE_LNG"]}" data-lat="${XQ["VILLAGE_LAT"]}" data-bounds="${XQ["VILLAGE_BOUNDS"]}" data-guid="${XQ["VILLAGE_ID"]}" onclick="getPoiDetail(this);"></i><i class="fa fa-edit mr-5" data-guid="${XQ["VILLAGE_ID"]}" onclick="editPoi(this);"></i><i class="fa fa-trash-o" data-guid="${XQ["VILLAGE_ID"]}" onclick="deletePoi(this);"></i>`, village_lng: XQ["VILLAGE_LNG"], village_lat: XQ["VILLAGE_LAT"] });
-
-                                });
-
-
-                                l.forEach(function (L) {
-                                    var icon = new AMap.Icon({
-                                        size: new AMap.Size(15, 15),
-                                        image: './icons/circle.png',  // Icon的图像
-                                        imageSize: new AMap.Size(15, 15)
-                                    });
-                                    var marker = new AMap.Marker({
-                                        position: new AMap.LngLat(L["LNG"], L["LAT"]),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-                                        title: L["BUILDING_NAME"],
-                                        icon: icon // 添加 Icon 图标 URL
-                                    });
-                                    map.add(marker);
-
-
-                                });
-                                lFirst.forEach(function (L) {
-                                    rowsL.push({ building_name: L["BUILDING_NAME"], building_address: L["BUILDING_ADDRESS"], building_action: `<i class=\"fa fa-eye mr-5 \" data-lng="${L["LNG"]}" data-lat="${L["LAT"]}" data-bounds="${L["BOUNDS"]}" data-guid="${L["BUILDING_ID"]}" onclick="getPoiDetail2(this);"></i><i class=\"fa fa-edit mr-5 \" data-guid="${L["BUILDING_ID"]}" onclick="editPoi2(this);"></i><i class=\"fa fa-trash-o \" data-guid="${L["BUILDING_ID"]}" onclick="deletePoi2(this);"></i>` });
-                                });
-                                $('#dg').datagrid('loadData', getData(rowsXQ));
-                                $('#dg2').datagrid('loadData', getData(rowsL));
-                            },
-                            error: function (item, err) {
-                console.log(err);
-            }
+                            method: 'post',
+                            singleSelect: true,
+                            pagination: true, //在DataGrid控件底部显示分页工具栏。
+                            fitColumns: true
                         });
-
                     }
+                    //            $.ajax({
+                    //                type: "get",
+                    //                url: `./api/IndexByCity?city=${city}`,
+                    //                contentType: "application/json; charset=utf-8",
+                    //                dataType: "json",
+                    //                success: function (data) {
+                    //                    map.clearMap();
+                    //                    $.ajax({
+                    //                    type: "get",
+                    //                    url: `https://restapi.amap.com/v3/geocode/geo?key=c7aeb11746b35a92b7b6eee3178a05e4&address=${city}&city=`,
+                    //                    contentType: "application/json; charset=utf-8",
+                    //                    dataType: "json",
+                    //                success: function (data) {
+                    //                    var lnglat = data["geocodes"][0]["location"];
+                    //                    lng = Number(lnglat.split(",")[0]);
+                    //                    lat = Number(lnglat.split(",")[1]);
+                    //                    map.setCenter([lng, lat]);
+                    //                    map.setZoom(17);
+
+                    //                },
+                    //                error: function () {
+                    //                    console.log('error');
+                    //                }
+                    //                    });
+                    //                            var xq = data[0]["ds"];
+                    //                    //var l = data[1]["ds"];
+                    //                    var lFirst = data[2]["ds"];
+                    //                    var rowsXQ = [];
+                    //                    var rowsL = [];
+                    //                    xq.forEach(function (XQ) {
+                    //                        if (XQ["VILLAGE_BOUNDS"] !== "null") {
+                    //                            var polygon = new AMap.Polygon({
+                    //                                strokeColor: "#2828FF",
+                    //                                fillOpacity: 0,
+                    //                                bubble: true,
+                    //                                strokeWeight: 1,
+                    //                                path: JSON.parse(XQ["VILLAGE_BOUNDS"]),
+                    //                                map: map
+                    //                            });
+
+                    //                            var polylineEditor = new AMap.PolyEditor(map, polygon);
+                    //                            polygon.setExtData({ "editor": polylineEditor });
+
+
+                    //                        }
+                    //                        var hasBounds = "无";
+                    //                if (XQ["VILLAGE_BOUNDS"] !== null) {
+                    //                    hasBounds = "有";
+                    //                }
+                    //                        rowsXQ.push({ village_name: XQ["VILLAGE_NAME"], village_address: XQ["VILLAGE_ADDRESS"], village_region: XQ["VILLAGE_REGION"], village_type: XQ["VILLAGE_TYPE"], village_count: XQ["VILLAGE_COUNT"],village_hasBounds: hasBounds,village_action: `<i class="fa fa-eye mr-5" data-lng="${XQ["VILLAGE_LNG"]}" data-lat="${XQ["VILLAGE_LAT"]}" data-bounds="${XQ["VILLAGE_BOUNDS"]}" data-guid="${XQ["VILLAGE_ID"]}" onclick="getPoiDetail(this);"></i><i class="fa fa-edit mr-5" data-guid="${XQ["VILLAGE_ID"]}" onclick="editPoi(this);"></i><i class="fa fa-trash-o" data-guid="${XQ["VILLAGE_ID"]}" onclick="deletePoi(this);"></i>`, village_lng: XQ["VILLAGE_LNG"], village_lat: XQ["VILLAGE_LAT"] });
+
+                    //                    });
+
+
+                    //                    //l.forEach(function (L) {
+                    //                    //    var icon = new AMap.Icon({
+                    //                    //        size: new AMap.Size(15, 15),
+                    //                    //        image: './icons/circle.png',  // Icon的图像
+                    //                    //        imageSize: new AMap.Size(15, 15)
+                    //                    //    });
+                    //                    //    var marker = new AMap.Marker({
+                    //                    //        position: new AMap.LngLat(L["LNG"], L["LAT"]),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+                    //                    //        title: L["BUILDING_NAME"],
+                    //                    //        icon: icon // 添加 Icon 图标 URL
+                    //                    //    });
+                    //                    //    map.add(marker);
+
+
+                    //                    //});
+                    //                    lFirst.forEach(function (L) {
+                    //                        rowsL.push({ building_name: L["BUILDING_NAME"], building_address: L["BUILDING_ADDRESS"], building_action: `<i class=\"fa fa-eye mr-5 \" data-lng="${L["LNG"]}" data-lat="${L["LAT"]}" data-bounds="${L["BOUNDS"]}" data-guid="${L["BUILDING_ID"]}" onclick="getPoiDetail2(this);"></i><i class=\"fa fa-edit mr-5 \" data-guid="${L["BUILDING_ID"]}" onclick="editPoi2(this);"></i><i class=\"fa fa-trash-o \" data-guid="${L["BUILDING_ID"]}" onclick="deletePoi2(this);"></i>` });
+                    //                    });
+                    //                    $('#dg').datagrid('loadData', getData(rowsXQ));
+                    //                    $('#dg2').datagrid('loadData', getData(rowsL));
+                    //                },
+                    //                error: function (item, err) {
+                    //    console.log(err);
+                    //}
+                    //            });
+
                 });
+              
                 selectCT.addEventListener('change', function (e) {
                     var value = e.target.value;
                     if (value !== "") {
@@ -3191,133 +3199,133 @@ myLoop();
             document.getElementById("footer").innerHTML += htmlTable1 + htmlTB1 + htmlTable2 + htmlTB2;
             
             // { data: getData(d) }
-            $(function () {
-                $('#dg').datagrid({ toolbar: "#tb" }).datagrid({
-                    onClickRow: function (index, row) {
+            //$(function () {
+            //    $('#dg').datagrid({ toolbar: "#tb" }).datagrid({
+            //        onClickRow: function (index, row) {
 
-                        for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
-                            document.getElementsByClassName("modalSmall")[i].remove();
-                        }
-                        console.log('clicked first');
-                        mousetool.close(true);
-                        document.getElementsByTagName("body")[0].setAttribute("data-currentIndex", index);
-                        var overlays = map.getAllOverlays("polygon");
-                        overlays.forEach(function (overlay) {
-                            overlay.setOptions({
-                                strokeColor: "#2828FF"
-                            });
-                        });
-                        var string = row["village_action"];
-                        var demo = document.createElement('div');
-                        demo.innerHTML = string;
-                        var lng = Number(demo.children[0].getAttribute("data-lng"));
-                        var lat = Number(demo.children[0].getAttribute("data-lat"));
-                        var bounds = demo.children[0].getAttribute("data-bounds");
-                        var dataGuid = demo.children[0].getAttribute("data-guid");
-                        console.log(lng);
-                        console.log(lat);
-                        map.setCenter([lng, lat]);
-                        map.setZoom(18);
-                        if (bounds !== "null") {
-                            var overlays2 = map.getAllOverlays("polygon");
-                            overlays2.forEach(function (overlay) {
-                                var bounds2 = "[";
-                                overlay.getPath().forEach(function (coord) {
-                                    var lng = coord["lng"];
-                                    var lat = coord["lat"];
-                                    bounds2 += `[${String(lng)},${String(lat)}],`;
-                                });
-                                bounds2 = bounds2.slice(0, bounds2.length - 1);
-                                bounds2 += "]";
-                                if (bounds === bounds2) {
-                                    overlay.setOptions({
-                                        strokeColor: "#D00000"
-                                    });
-                                }
-                            });
-                        }
-                        //document.getElementsByClassName('panel')[1].remove();
-                        $.ajax({
-                            type: "get",
-                            url: `./API/VillageBuildings?id=${dataGuid}`,
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
-                            success: function (data) {
-                                rowsL = [];
-                                data["ds"].forEach(function (L) {
-                                    rowsL.push({ building_name: L["BUILDING_NAME"], building_address: L["BUILDING_ADDRESS"], building_action: `<i class=\"fa fa-eye mr-5 \" data-lng="${L["LNG"]}" data-lat="${L["LAT"]}" data-bounds="${L["BOUNDS"]}" data-guid="${L["BUILDING_ID"]}" onclick="getPoiDetail2(this);"></i><i class=\"fa fa-edit mr-5 \" data-guid="${L["BUILDING_ID"]}" onclick="editPoi2(this);"></i><i class=\"fa fa-trash-o \" data-guid="${L["BUILDING_ID"]}" onclick="deletePoi2(this);"></i>` });
-                                });
+            //            for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
+            //                document.getElementsByClassName("modalSmall")[i].remove();
+            //            }
+            //            console.log('clicked first');
+            //            mousetool.close(true);
+            //            document.getElementsByTagName("body")[0].setAttribute("data-currentIndex", index);
+            //            var overlays = map.getAllOverlays("polygon");
+            //            overlays.forEach(function (overlay) {
+            //                overlay.setOptions({
+            //                    strokeColor: "#2828FF"
+            //                });
+            //            });
+            //            var string = row["village_action"];
+            //            var demo = document.createElement('div');
+            //            demo.innerHTML = string;
+            //            var lng = Number(demo.children[0].getAttribute("data-lng"));
+            //            var lat = Number(demo.children[0].getAttribute("data-lat"));
+            //            var bounds = demo.children[0].getAttribute("data-bounds");
+            //            var dataGuid = demo.children[0].getAttribute("data-guid");
+            //            console.log(lng);
+            //            console.log(lat);
+            //            map.setCenter([lng, lat]);
+            //            map.setZoom(18);
+            //            if (bounds !== "null") {
+            //                var overlays2 = map.getAllOverlays("polygon");
+            //                overlays2.forEach(function (overlay) {
+            //                    var bounds2 = "[";
+            //                    overlay.getPath().forEach(function (coord) {
+            //                        var lng = coord["lng"];
+            //                        var lat = coord["lat"];
+            //                        bounds2 += `[${String(lng)},${String(lat)}],`;
+            //                    });
+            //                    bounds2 = bounds2.slice(0, bounds2.length - 1);
+            //                    bounds2 += "]";
+            //                    if (bounds === bounds2) {
+            //                        overlay.setOptions({
+            //                            strokeColor: "#D00000"
+            //                        });
+            //                    }
+            //                });
+            //            }
+            //            //document.getElementsByClassName('panel')[1].remove();
+            //            $.ajax({
+            //                type: "get",
+            //                url: `./API/VillageBuildings?id=${dataGuid}`,
+            //                contentType: "application/json; charset=utf-8",
+            //                dataType: "json",
+            //                success: function (data) {
+            //                    rowsL = [];
+            //                    data["ds"].forEach(function (L) {
+            //                        rowsL.push({ building_name: L["BUILDING_NAME"], building_address: L["BUILDING_ADDRESS"], building_action: `<i class=\"fa fa-eye mr-5 \" data-lng="${L["LNG"]}" data-lat="${L["LAT"]}" data-bounds="${L["BOUNDS"]}" data-guid="${L["BUILDING_ID"]}" onclick="getPoiDetail2(this);"></i><i class=\"fa fa-edit mr-5 \" data-guid="${L["BUILDING_ID"]}" onclick="editPoi2(this);"></i><i class=\"fa fa-trash-o \" data-guid="${L["BUILDING_ID"]}" onclick="deletePoi2(this);"></i>` });
+            //                    });
 
-                                $(function () {
-                                    $('#dg2').datagrid('loadData', getData(rowsL));
-                                });
-                            },
-                            error: function (item, err) {
-                                console.log(err);
-                            }
-                        });
-                        // get related buildings through api and use json to build table to right and attach events also remove old table to right
-                        // extract record location and guid, relocate map to location, remove buildings table from dom,
-                        // sned request to api to get related buildings in json string form and use it to build
-                        // a new table and bind events to it
-                    }
-                }).datagrid('clientPaging').datagrid('highlightRow', 0);
+            //                    $(function () {
+            //                        $('#dg2').datagrid('loadData', getData(rowsL));
+            //                    });
+            //                },
+            //                error: function (item, err) {
+            //                    console.log(err);
+            //                }
+            //            });
+            //            // get related buildings through api and use json to build table to right and attach events also remove old table to right
+            //            // extract record location and guid, relocate map to location, remove buildings table from dom,
+            //            // sned request to api to get related buildings in json string form and use it to build
+            //            // a new table and bind events to it
+            //        }
+            //    }).datagrid('clientPaging').datagrid('highlightRow', 0);
 
-                $('#dg2').datagrid({ toolbar: "#tb2" }).datagrid({
-                    onClickRow: function (index, row) {
-                        for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
-                            document.getElementsByClassName("modalSmall")[i].remove();
-                        }
-                        mousetool.close(true);
+            //    $('#dg2').datagrid({ toolbar: "#tb2" }).datagrid({
+            //        onClickRow: function (index, row) {
+            //            for (var i = 0; i < document.getElementsByClassName("modalSmall").length; i++) {
+            //                document.getElementsByClassName("modalSmall")[i].remove();
+            //            }
+            //            mousetool.close(true);
 
-                        console.log('clicked');
-                        document.getElementsByTagName("body")[0].setAttribute("data-currentIndex", index);
-                        var markers = map.getAllOverlays("marker");
-                        markers.forEach(function (marker) {
-                            //marker.setOptions({
-                            //    fillColor:'rgba(0,0,255,1)'
-                            //});
+            //            console.log('clicked');
+            //            document.getElementsByTagName("body")[0].setAttribute("data-currentIndex", index);
+            //            var markers = map.getAllOverlays("marker");
+            //            markers.forEach(function (marker) {
+            //                //marker.setOptions({
+            //                //    fillColor:'rgba(0,0,255,1)'
+            //                //});
 
-                            var icon = new AMap.Icon({
-                                size: new AMap.Size(15, 15),
-                                image: './icons/circle.png', // Icon的图像
-                                imageSize: new AMap.Size(15, 15)
-                            });
-                            marker.setIcon(icon);
-                        });
-                        var string = row["building_action"];
-                        var demo = document.createElement('div');
-                        demo.innerHTML = string;
-                        var lng = Number(demo.children[0].getAttribute("data-lng"));
-                        var lat = Number(demo.children[0].getAttribute("data-lat"));
-                        //var markers2 = map.getAllOverlays("circle");
+            //                var icon = new AMap.Icon({
+            //                    size: new AMap.Size(15, 15),
+            //                    image: './icons/circle.png', // Icon的图像
+            //                    imageSize: new AMap.Size(15, 15)
+            //                });
+            //                marker.setIcon(icon);
+            //            });
+            //            var string = row["building_action"];
+            //            var demo = document.createElement('div');
+            //            demo.innerHTML = string;
+            //            var lng = Number(demo.children[0].getAttribute("data-lng"));
+            //            var lat = Number(demo.children[0].getAttribute("data-lat"));
+            //            //var markers2 = map.getAllOverlays("circle");
 
-                        markers.forEach(function (marker) {
-                            if (marker.getPosition()["lng"] == lng && marker.getPosition()["lat"] == lat) {
-                                var icon = new AMap.Icon({
-                                    size: new AMap.Size(15, 15),
-                                    image: './icons/circle1.png', // Icon的图像
-                                    imageSize: new AMap.Size(15, 15)
-                                });
-                                marker.setIcon(icon);
-                            }
-                        });
-                        //markers2.forEach(function (marker) {
-                        //     if (marker.getCenter()["lng"] == lng && marker.getCenter()["lat"] == lat) {
-                        //             marker.setOptions({
-                        //        fillColor:'rgba(0,255,0,1)'
-                        //    });
-                        //            //marker.setIcon('https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png');
-                        //        }
-                        //    });
-                        map.setCenter([lng, lat]);
-                        map.setZoom(18);
-                    }
-                }).datagrid('clientPaging').datagrid('highlightRow', 0);
-                $('.datagrid-pager.pagination').pagination({
-                    displayMsg: "显示 {total} 条 中 {from} 到 {to} 条"
-                });
-            });
+            //            markers.forEach(function (marker) {
+            //                if (marker.getPosition()["lng"] == lng && marker.getPosition()["lat"] == lat) {
+            //                    var icon = new AMap.Icon({
+            //                        size: new AMap.Size(15, 15),
+            //                        image: './icons/circle1.png', // Icon的图像
+            //                        imageSize: new AMap.Size(15, 15)
+            //                    });
+            //                    marker.setIcon(icon);
+            //                }
+            //            });
+            //            //markers2.forEach(function (marker) {
+            //            //     if (marker.getCenter()["lng"] == lng && marker.getCenter()["lat"] == lat) {
+            //            //             marker.setOptions({
+            //            //        fillColor:'rgba(0,255,0,1)'
+            //            //    });
+            //            //            //marker.setIcon('https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png');
+            //            //        }
+            //            //    });
+            //            map.setCenter([lng, lat]);
+            //            map.setZoom(18);
+            //        }
+            //    }).datagrid('clientPaging').datagrid('highlightRow', 0);
+            //    $('.datagrid-pager.pagination').pagination({
+            //        displayMsg: "显示 {total} 条 中 {from} 到 {to} 条"
+            //    });
+            //});
             // switchRegion();
         }
 

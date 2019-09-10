@@ -10,10 +10,207 @@
     padding: 20px;
 }
 
+.pd-10 {
+    padding: 10px;
+}
+
+.pb-5px {
+    padding-bottom: 5px;
+}
+
+.pd-5px {
+    padding: 5px;
+}
+
 .bb-lightblue {
     border-bottom: 1px solid lightblue;
 }
 
+.bd2-lightblue {
+    border: 2px solid lightblue;
+}
+
+.cr-lightblue {
+    color: lightblue;
+}
+
 .bn {
     border: none;
+}
+
+#header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    background-color: white;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.mr-5 {
+    margin-right: 5px;
+}
+
+.mr-10 {
+    margin-right: 10px;
+}
+
+.mb-5 {
+    margin-bottom: 5px;
+}
+
+.clRedError {
+    color: red;
+}
+
+.mr-20 {
+    margin-right: 20px;
+}
+
+
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+.mb-15 {
+    margin-bottom: 15px;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+.aic {
+    align-items: center;
+}
+
+#inputSearchIcon{
+    position: relative;
+    left: -30px;
+}
+
+.w-70p {
+    width: 70%;
+}
+
+.w-30p {
+    width: 30%;
+}
+
+.modalSmall {
+    background: white;
+    position: fixed;
+    top: 100px;
+    right: 25px;
+    padding: 25px;
+}
+
+.modalCentered {
+    right: 33%!important;
+    left: 33%!important;
+    top: 33%!important;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+#buttonOpenClose {
+    border-radius: 10px;
+    border: 2px solid lightblue;
+    background: white;
+    position: absolute;
+    top: -40px;
+    right: 20px;
+    padding: 10px;
+}
+
+.fr {
+    float:right;
+}
+
+.tc {
+    text-align: center;
+}
+
+.tr {
+    text-align: right;
+}
+
+i.fa{
+    cursor: pointer;
+}
+
+.selectedButton {
+    background-color: lightgray!important;
+}
+
+.tabsMain {
+    border: 1px solid #C9C9C9;
+    border-radius: 100px;
+}
+
+.tabBorderLeft {
+    border-radius: 100px 0 0 100px;
+}
+
+.tabBorderRight {
+    border-radius: 0 100px 100px 0;
+}
+
+.m0{
+    margin:0!important;
+}
+
+.bd0 {
+    border: none;
+}
+
+.hidden {
+    display: none!important;
+}
+
+#logo {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.selectPCC {
+    padding: 10px;
+    border: none;
+}
+
+select::-ms-expand {
+    display: none;
+}
+
+#panelLeft {
+    width: 70%!important;
+}
+#panelRight {
+    width: 30%!important;
+}
+
+.w-100p {
+    width: 100% !important;
+}
+
+#container {
+    top: -100px;
+}
+
+#pb {
+    position: fixed;
+    top: 300px;
+    width: 33%;
+    left: 33%;
 }
